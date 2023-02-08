@@ -71,9 +71,6 @@ inputs:
       position: 4
       shellQuote: true
 
-  array_str:
-    type: string[]
-
   num_gpus:
     type: int
     inputBinding:
