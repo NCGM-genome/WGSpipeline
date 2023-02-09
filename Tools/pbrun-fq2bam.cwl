@@ -56,11 +56,12 @@ inputs:
     secondaryFiles:
       - ^.dict
       - .fai
-      - .amb
-      - .ann
-      - .bwt
-      - .pac
-      - .sa
+      - .64.amb
+      - .64.ann
+      - .64.bwt
+      - .64.pac
+      - .64.sa
+      - .64.alt
 
   bwa_options:
     type: string?
