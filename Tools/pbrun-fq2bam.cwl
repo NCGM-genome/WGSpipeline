@@ -6,7 +6,6 @@ label: pbrun-fq2bam
 cwlVersion: v1.1
 
 $namespaces:
-  edam: http://edamontology.org/
   cwltool: http://commonwl.org/cwltool#
 
 requirements:
