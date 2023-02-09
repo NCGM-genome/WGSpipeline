@@ -77,5 +77,5 @@ arguments:
     prefix: --out-variants
     valueFrom: $(inputs.prefix).g.vcf.gz
   - position: 7
-    prefix: --gvcf
+    valueFrom: --gvcf
 
