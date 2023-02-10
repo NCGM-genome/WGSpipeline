@@ -76,8 +76,8 @@ inputs:
     doc: Interval BED file for chrY regions
 
 steps:
-  fq2bam:
-    run: ../Tools/pbrun-fq2bam.cwl
+  fq2cram:
+    run: ../Tools/pbrun-fq2cram.cwl
     in:
       ref: ref
       fq1: fq1
@@ -91,13 +91,13 @@ steps:
       num_gpus: num_gpus
       prefix: prefix
     out:
-      - bam
+      - cram
 
   haplotypecaller_autosome:
-    run: ../Tools/pbrun-haplotypecaller.cwl
+    run: ../Tools/pbrun-haplotypecaller-from-cram.cwl
     in: 
       ref: ref
-      bam: fq2bam/bam
+      cram: fq2cram/cram
       interval_file: autosome_interval
       ploidy: 
         valueFrom: $(2)
@@ -109,10 +109,10 @@ steps:
       - gvcf
 
   haplotypecaller_PAR:
-    run: ../Tools/pbrun-haplotypecaller.cwl
+    run: ../Tools/pbrun-haplotypecaller-from-cram.cwl
     in: 
       ref: ref
-      bam: fq2bam/bam
+      cram: fq2cram/cram
       interval_file: PAR_interval
       ploidy: 
         valueFrom: $(2)
@@ -124,10 +124,10 @@ steps:
       - gvcf
 
   haplotypecaller_chrX_female:
-    run: ../Tools/pbrun-haplotypecaller.cwl
+    run: ../Tools/pbrun-haplotypecaller-from-cram.cwl
     in: 
       ref: ref
-      bam: fq2bam/bam
+      cram: fq2cram/cram
       interval_file: chrX_interval
       ploidy: 
         valueFrom: $(2)
@@ -139,10 +139,10 @@ steps:
       - gvcf
 
   haplotypecaller_chrX_male:
-    run: ../Tools/pbrun-haplotypecaller.cwl
+    run: ../Tools/pbrun-haplotypecaller-from-cram.cwl
     in: 
       ref: ref
-      bam: fq2bam/bam
+      cram: fq2cram/cram
       interval_file: chrX_interval
       ploidy: 
         valueFrom: $(1)
@@ -154,10 +154,10 @@ steps:
       - gvcf
 
   haplotypecaller_chrY:
-    run: ../Tools/pbrun-haplotypecaller.cwl
+    run: ../Tools/pbrun-haplotypecaller-from-cram.cwl
     in: 
       ref: ref
-      bam: fq2bam/bam
+      cram: fq2cram/cram
       interval_file: chrY_interval
       ploidy: 
         valueFrom: $(1)
@@ -170,9 +170,9 @@ steps:
 
 
 outputs:
-  bam:
+  cram:
     type: File
-    outputSource: fq2bam/bam
+    outputSource: fq2cram/cram
 
   gvcf_autosome:
     type: File
