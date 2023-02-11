@@ -1,8 +1,34 @@
 # WGSpipeline
 
+This repository contains the following workflow:
+- **`germline-gpu.cwl`:** This workflow calculates `cram` and `gvcf` files from `fastq` files using `parabricks` version 4.0.0.
+
+## Installation requirements
+- [Hardware requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#hardware-requirements)
+- [Software requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#software-requirements)
+- SingularityCE 3.10.2+
+- python 3+
+
+## Install `cwltool`
+You can install cwltool by executing the following commands:
+```
+$ cd /path/to/working/directory/
+$ python -m venv cwlenv
+$ . cwlenv/bin/activate
+$ python -m pip install --upgrade pip
+$ pip install cwltool
+```
+
+Please confirm the cwltool version:
+```
+$ cwltool --version
+/path/to/working/directory/cwlenv/bin/cwltool 3.1.20230201224320
+```
+
+
 ## Usage
 
-Usage of `germline-gpu.cwl`:
+### `germline-gpu.cwl` workflow
 ```
 usage: Workflows/germline-gpu.cwl [-h] [--bwa_options BWA_OPTIONS] \
                                     --ref REF \
