@@ -2,6 +2,27 @@
 
 ## Usage
 
+usage: Workflows/germline-gpu.cwl [-h] --PAR_interval PAR_INTERVAL --autosome_interval AUTOSOME_INTERVAL [--bwa_options BWA_OPTIONS] --chrX_interval CHRX_INTERVAL --chrY_interval CHRY_INTERVAL --fq1 FQ1
+                                  --fq2 FQ2 --num_gpus NUM_GPUS --prefix PREFIX --ref REF --rg RG
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --PAR_interval PAR_INTERVAL
+                        Interval BED file for PAR regions
+  --autosome_interval AUTOSOME_INTERVAL
+                        Interval BED file for autosome regions
+  --bwa_options BWA_OPTIONS
+  --chrX_interval CHRX_INTERVAL
+                        Interval BED file for chrX regions
+  --chrY_interval CHRY_INTERVAL
+                        Interval BED file for chrY regions
+  --fq1 FQ1             FASTQ file 1
+  --fq2 FQ2             FASTQ file 2
+  --num_gpus NUM_GPUS
+  --prefix PREFIX       Output file prefix
+  --ref REF             Reference FASTA file
+  --rg RG               Read group string
+
 Basic usage of `germline-gpu.cwl` workflow with a pair of FASTQ files.
 ```
 $ cd /path/to/working/directory
