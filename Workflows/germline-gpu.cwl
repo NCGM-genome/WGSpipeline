@@ -12,28 +12,16 @@ requirements:
 
 inputs:
   fq1:
-    type: File
+    type: File[]
     doc: FASTQ file 1
 
   fq2:
-    type: File
+    type: File[]
     doc: FASTQ file 2
 
-  RG_ID:
-    type: string
-    doc: Read group identifier (ID) in RG line
-  RG_PL:
-    type: string
-    doc: Platform/technology used to produce the read (PL) in RG line
-  RG_PU:
-    type: string
-    doc: Platform Unit (PU) in RG line
-  RG_LB:
-    type: string
-    doc: DNA preparation library identifier (LB) in RG line
-  RG_SM:
-    type: string
-    doc: Sample (SM) identifier in RG line  
+  rg:
+    type: string[]
+    doc: Read group string
 
   ref: 
     type: File
@@ -77,16 +65,12 @@ inputs:
 
 steps:
   fq2cram:
-    run: ../Tools/pbrun-fq2cram.cwl
+    run: ../Tools/pbrun-fq2cram-multiRGs.cwl
     in:
       ref: ref
       fq1: fq1
       fq2: fq2
-      RG_ID: RG_ID
-      RG_PL: RG_PL
-      RG_PU: RG_PU
-      RG_LB: RG_LB
-      RG_SM: RG_SM
+      rg: rg
       bwa_options: bwa_options
       num_gpus: num_gpus
       prefix: prefix
@@ -167,7 +151,6 @@ steps:
         valueFrom: $(inputs.tmpprefix).chrY
     out: 
       - gvcf
-
 
 outputs:
   cram:
