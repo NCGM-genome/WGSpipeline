@@ -2,26 +2,37 @@
 
 ## Usage
 
-usage: Workflows/germline-gpu.cwl [-h] --PAR_interval PAR_INTERVAL --autosome_interval AUTOSOME_INTERVAL [--bwa_options BWA_OPTIONS] --chrX_interval CHRX_INTERVAL --chrY_interval CHRY_INTERVAL --fq1 FQ1
-                                  --fq2 FQ2 --num_gpus NUM_GPUS --prefix PREFIX --ref REF --rg RG
+Usage of `germline-gpu.cwl`:
+```
+usage: Workflows/germline-gpu.cwl [-h] [--bwa_options BWA_OPTIONS] \
+                                    --ref REF \
+                                    --fq1 FQ1 \
+                                    --fq2 FQ2 \
+                                    --rg RG \
+                                    --autosome_interval AUTOSOME_INTERVAL \
+                                    --PAR_interval PAR_INTERVAL \
+                                    --chrX_interval CHRX_INTERVAL \
+                                    --chrY_interval CHRY_INTERVAL \
+                                    --num_gpus NUM_GPUS \
+                                    --prefix PREFIX 
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --PAR_interval PAR_INTERVAL
-                        Interval BED file for PAR regions
-  --autosome_interval AUTOSOME_INTERVAL
-                        Interval BED file for autosome regions
-  --bwa_options BWA_OPTIONS
-  --chrX_interval CHRX_INTERVAL
-                        Interval BED file for chrX regions
-  --chrY_interval CHRY_INTERVAL
-                        Interval BED file for chrY regions
-  --fq1 FQ1             FASTQ file 1
-  --fq2 FQ2             FASTQ file 2
-  --num_gpus NUM_GPUS
-  --prefix PREFIX       Output file prefix
-  --ref REF             Reference FASTA file
-  --rg RG               Read group string
+  -h, --help                Show this help message and exit.
+  --bwa_options STRING      Pass supported bwa mem options as one string. 
+                            The current original bwa mem supported options are -M, -Y, and -T. 
+                            (e.g. --bwa-options="-M -Y") 
+                            (default: "-T 0 -Y")
+  --ref FILE                Path to the reference file.
+  --fq1 FILE                Path to FASTQ file 1.
+  --fq2 FILE                Path to FASTQ file 2.
+  --rg STRING               Read group string.
+  --autosome_interval FILE  Path to interval BED file for autosome regions.
+  --PAR_interval FILE       Path to interval BED file for PAR regions.
+  --chrX_interval FILE      Path to interval BED file for chrX regions.
+  --chrY_interval FILE      Path to interval BED file for chrY regions.
+  --num_gpus INT            Number of GPUs to use for a run (should be ≥1). 
+  --prefix STRING           Output file prefix.
+```
 
 Basic usage of `germline-gpu.cwl` workflow with a pair of FASTQ files.
 ```
