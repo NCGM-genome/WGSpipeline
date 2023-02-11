@@ -39,9 +39,7 @@ $ cd /path/to/working/directory/
 $ OUTDIR=reference_hg38 ; mkdir -p $OUTDIR ; for url in `cat WGSpipeline/download_links/reference_hg38.download_links.txt` ; do echo $url ; file=`basename $url` ; if [ ! -f ${OUTDIR}/$file ] ; then wget $url -O ${OUTDIR}/$file ; fi ; done
 ```
 
-## Usage
-
-### `germline-gpu.cwl` workflow
+## Usage of `germline-gpu.cwl` workflow
 ```
 usage: Workflows/germline-gpu.cwl [-h] [--bwa_options BWA_OPTIONS] \
                                     --ref REF \
@@ -73,41 +71,69 @@ optional arguments:
   --prefix STRING           Output file prefix.
 ```
 
-Basic usage of `germline-gpu.cwl` workflow with a pair of FASTQ files.
+## Download a dataset for tutorial
+Download a dataset for tutorial from the URLs listed in [wgs_fastq_NA12878_20k.download_links.txt](./download_links/wgs_fastq_NA12878_20k.download_links.txt) by executing the following commnds:
+```
+$ cd /path/to/working/directory/
+$ OUTDIR=wgs_fastq ; mkdir -p $OUTDIR ; for url in `cat WGSpipeline/download_links/wgs_fastq_NA12878_20k.download_links.txt` ; do echo $url ; file=`basename $url` ; if [ ! -f ${OUTDIR}/$file ] ; then wget $url -O ${OUTDIR}/$file ; fi ; done
+```
+
+
+## Tutorial 1: Run  `germline-gpu.cwl` workflow with a pair of FASTQ files.
+Run `germline-gpu.cwl` workflow with a pair of FASTQ files.
+
 ```
 $ cd /path/to/working/directory
+$ mkdir -p tutorial_01
 $ . cwlenv/bin/activate
 $ cwltool --singularity \
-    --outdir output_directory \
+    --outdir tutorial_01 \
     WGSpipeline/Workflows/germline-gpu.cwl \
     --ref reference_hg38/Homo_sapiens_assembly38.fasta \
-    --fq1 libraryA_1.fq.gz \
-    --fq2 libraryA_2.fq.gz \
-    --rg "@RG\\tID:read_group_id\\tPL:platform\\tPU:platform_unit\\tLB:library\\tSM:sample_id" \
+    --fq1 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06HDADXX130110.1\\tPL:ILLUMINA\\tPU:H06HDADXX130110.1\\tLB:H06HDADXX130110.1\\tSM:NA12878" \
     --num_gpus 4 \
-    --prefix prefix \
+    --prefix NA12878.H06HDADXX130110.1 \
     --autosome_interval WGSpipeline/interval_files/autosome.bed \
     --PAR_interval WGSpipeline/interval_files/PAR.bed \
     --chrX_interval WGSpipeline/interval_files/chrX.bed \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
 
-Usage of `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
+Output files will be saved in the directory `/path/to/working/directory/tutorial_01`:
+```
+/path/to/working/directory/tutorial_01
+|--NA12878.H06HDADXX130110.1.PAR.g.vcf.gz
+|--NA12878.H06HDADXX130110.1.PAR.g.vcf.gz.tbi
+|--NA12878.H06HDADXX130110.1.autosome.g.vcf.gz
+|--NA12878.H06HDADXX130110.1.autosome.g.vcf.gz.tbi
+|--NA12878.H06HDADXX130110.1.chrX_female.g.vcf.gz
+|--NA12878.H06HDADXX130110.1.chrX_female.g.vcf.gz.tbi
+|--NA12878.H06HDADXX130110.1.chrX_male.g.vcf.gz
+|--NA12878.H06HDADXX130110.1.chrX_male.g.vcf.gz.tbi
+|--NA12878.H06HDADXX130110.1.chrY.g.vcf.gz
+|--NA12878.H06HDADXX130110.1.chrY.g.vcf.gz.tbi
+|--NA12878.H06HDADXX130110.1.cram
+|--NA12878.H06HDADXX130110.1.cram.crai
+```
+
+
+## Tutorial 2: Run `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
+Run `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
 ```
 $ cd /path/to/working/directory
+$ mkdir -p tutorial_02
 $ . cwlenv/bin/activate
 $ cwltool --singularity \
-    --outdir output_directory \
+    --outdir tutorial_02 \
     WGSpipeline/Workflows/germline-gpu.cwl \
     --ref reference_hg38/Homo_sapiens_assembly38.fasta \
-    --fq1 libraryA_1.fq.gz \
-    --fq2 libraryA_2.fq.gz \
-    --rg "@RG\\tID:read_group_id\\tPL:platform\\tPU:platform_unit\\tLB:libraryA\\tSM:sample_id" \
-    --fq1 libraryB_1.fq.gz \
-    --fq2 libraryB_2.fq.gz \
-    --rg "@RG\\tID:read_group_id\\tPL:platform\\tPU:platform_unit\\tLB:libraryB\\tSM:sample_id" \
+    --fq1 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06HDADXX130110.1\\tPL:ILLUMINA\\tPU:H06HDADXX130110.1\\tLB:H06HDADXX130110.1\\tSM:NA12878" \
     --num_gpus 4 \
-    --prefix prefix \
+    --prefix NA12878_20k \
     --autosome_interval WGSpipeline/interval_files/autosome.bed \
     --PAR_interval WGSpipeline/interval_files/PAR.bed \
     --chrX_interval WGSpipeline/interval_files/chrX.bed \
