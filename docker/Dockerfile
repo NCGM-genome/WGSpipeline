@@ -1,0 +1,8 @@
+FROM nvcr.io/nvidia/clara/clara-parabricks:4.0.0-1
+LABEL maintainer="hacchy_1983@mac.com"
+
+WORKDIR /tools
+
+COPY pbrun-fq2bam.sh .
+
+CMD ["/bin/bash"]
