@@ -121,6 +121,11 @@ Output files will be saved in the directory `/path/to/working/directory/tutorial
 
 ## Tutorial 2: Run `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
 Run `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
+
+`--fq1`, `--fq2`, and `--rg` options can be repeated multiple times. 
+The number of `--fq1` options should be same as the number of `--fq2` and `--rg` options.
+The order of `--fq1`, `--fq2`, and `--rg` options are important. 
+
 ```
 $ cd /path/to/working/directory
 $ mkdir -p tutorial_02
@@ -132,16 +137,33 @@ $ cwltool --singularity \
     --fq1 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq \
     --fq2 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq \
     --rg "@RG\\tID:NA12878.H06HDADXX130110.1\\tPL:ILLUMINA\\tPU:H06HDADXX130110.1\\tLB:H06HDADXX130110.1\\tSM:NA12878" \
+    --fq1 wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06HDADXX130110.2\\tPL:ILLUMINA\\tPU:H06HDADXX130110.2\\tLB:H06HDADXX130110.2\\tSM:NA12878" \
+    --fq1 wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06JUADXX130110.1\\tPL:ILLUMINA\\tPU:H06JUADXX130110.1\\tLB:H06JUADXX130110.1\\tSM:NA12878" \
     --num_gpus 4 \
-    --prefix NA12878_20k \
+    --prefix NA12878 \
     --autosome_interval WGSpipeline/interval_files/autosome.bed \
     --PAR_interval WGSpipeline/interval_files/PAR.bed \
     --chrX_interval WGSpipeline/interval_files/chrX.bed \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
-`--fq1`, `--fq2`, and `--rg` options can be repeated multiple times. 
-The number of `--fq1` options should be same as the number of `--fq2` and `--rg` options.
-The order of `--fq1`, `--fq2`, and `--rg` options are important. 
 
-
-
+Output files will be saved in the directory `/path/to/working/directory/tutorial_02`:
+```
+/path/to/working/directory/tutorial_02
+|--NA12878.PAR.g.vcf.gz
+|--NA12878.PAR.g.vcf.gz.tbi
+|--NA12878.autosome.g.vcf.gz
+|--NA12878.autosome.g.vcf.gz.tbi
+|--NA12878.chrX_female.g.vcf.gz
+|--NA12878.chrX_female.g.vcf.gz.tbi
+|--NA12878.chrX_male.g.vcf.gz
+|--NA12878.chrX_male.g.vcf.gz.tbi
+|--NA12878.chrY.g.vcf.gz
+|--NA12878.chrY.g.vcf.gz.tbi
+|--NA12878.cram
+|--NA12878.cram.crai
+```
