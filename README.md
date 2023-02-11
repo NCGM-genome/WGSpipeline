@@ -107,7 +107,7 @@ $ cwltool --singularity \
     --chrX_interval WGSpipeline/interval_files/chrX.bed \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
-When `--knownSites` option is not used, then BQSR will not be applied and `_prefix_.bqsr.recla.table` file will be empty. 
+When `--knownSites` option is not used, then BQSR will not be applied and `<prefix>.bqsr.recla.table` file will be empty. 
 
 Output files will be saved in the directory `/path/to/working/directory/tutorial_01`:
 ```
@@ -179,7 +179,7 @@ Output files will be saved in the directory `/path/to/working/directory/tutorial
 ```
 
 ## Tutorial 3: Run `germline-gpu.cwl` workflow with --knownSites option
-Run `germline-gpu.cwl` workflow with --knownSites option
+Run `germline-gpu.cwl` workflow with --knownSites option.
 
 ```
 $ cd /path/to/working/directory
@@ -208,9 +208,9 @@ $ cwltool --singularity \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
 
-When `--knownSites` option is used, then BQSR will be applied and `_prefix_.bqsr.recla.table` file will not be empty. 
+When `--knownSites` option is used, then BQSR will be applied and `<prefix>.bqsr.recla.table` file will not be empty. 
 
-Output files will be saved in the directory `/path/to/working/directory/tutorial_02`:
+Output files will be saved in the directory `/path/to/working/directory/tutorial_03`:
 ```
 /path/to/working/directory/tutorial_03
 |--NA12878.PAR.g.vcf.gz
