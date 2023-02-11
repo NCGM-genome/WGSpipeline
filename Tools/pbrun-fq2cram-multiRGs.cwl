@@ -10,7 +10,7 @@ $namespaces:
 
 requirements:
   DockerRequirement:
-    dockerPull: hacchy/pbrun-fq2bam:4.0.0-1_v20230210
+    dockerPull: hacchy/pbrun-fq2bam:4.0.0-1_v20230211
   ShellCommandRequirement: {}
 
 hints:
@@ -59,6 +59,15 @@ inputs:
     inputBinding:
       position: 4
 
+  knownSites:
+    type: File[]?
+    doc: A known indels file. The file must be in vcf.gz format. This option can be used multiple times.
+    secondaryFiles:
+      - .tbi
+    inputBinding: 
+      position: 9
+      itemSeparator: ","
+
   bwa_options:
     type: string?
     default: "-T 0 -Y"
@@ -83,6 +92,10 @@ outputs:
       glob: $(inputs.prefix).cram
     secondaryFiles:
       - .crai
+  recal:
+    type: File
+    outputBinding:
+      glob: $(inputs.prefix).bqsr.recal.table
 
 arguments:
   - position: 8
