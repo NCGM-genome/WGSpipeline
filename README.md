@@ -41,17 +41,18 @@ $ OUTDIR=reference_hg38 ; mkdir -p $OUTDIR ; for url in `cat WGSpipeline/downloa
 
 ## Usage of `germline-gpu.cwl` workflow
 ```
-usage: Workflows/germline-gpu.cwl [-h] [--bwa_options BWA_OPTIONS] \
-                                    --ref REF \
-                                    --fq1 FQ1 \
-                                    --fq2 FQ2 \
-                                    --rg RG \
-                                    --autosome_interval AUTOSOME_INTERVAL \
-                                    --PAR_interval PAR_INTERVAL \
-                                    --chrX_interval CHRX_INTERVAL \
-                                    --chrY_interval CHRY_INTERVAL \
-                                    --num_gpus NUM_GPUS \
-                                    --prefix PREFIX 
+usage: Workflows/germline-gpu.cwl [-h] [--bwa_options STRING] \
+                                    --ref FILE \
+				    [--knownSites FILE] \
+                                    --fq1 FILE \
+                                    --fq2 FILE \
+                                    --rg STRING \
+                                    --autosome_interval FILE \
+                                    --PAR_interval FILE \
+                                    --chrX_interval FILE \
+                                    --chrY_interval FILE \
+                                    --num_gpus INT \
+                                    --prefix STRING
 
 optional arguments:
   -h, --help                Show this help message and exit.
@@ -59,10 +60,16 @@ optional arguments:
                             The current original bwa mem supported options are -M, -Y, and -T. 
                             (e.g. --bwa-options="-M -Y") 
                             (default: "-T 0 -Y")
-  --ref FILE                Path to the reference file.
+  --ref FILE                Path to the reference file.	
+  --knownSites FILE         Path to a known indels file. 
+  	       		    The file must be in vcf.gz format. 
+			    This option can be used multiple times.
   --fq1 FILE                Path to FASTQ file 1.
+			    This option can be used multiple times.
   --fq2 FILE                Path to FASTQ file 2.
+			    This option can be used multiple times.
   --rg STRING               Read group string.
+			    This option can be used multiple times.
   --autosome_interval FILE  Path to interval BED file for autosome regions.
   --PAR_interval FILE       Path to interval BED file for PAR regions.
   --chrX_interval FILE      Path to interval BED file for chrX regions.
@@ -100,6 +107,7 @@ $ cwltool --singularity \
     --chrX_interval WGSpipeline/interval_files/chrX.bed \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
+When `--knownSites` option is not used, then BQSR will not be applied and `<prefix>.bqsr.recla.table` file will be empty. 
 
 Output files will be saved in the directory `/path/to/working/directory/tutorial_01`:
 ```
@@ -108,6 +116,7 @@ Output files will be saved in the directory `/path/to/working/directory/tutorial
 |--NA12878.H06HDADXX130110.1.PAR.g.vcf.gz.tbi
 |--NA12878.H06HDADXX130110.1.autosome.g.vcf.gz
 |--NA12878.H06HDADXX130110.1.autosome.g.vcf.gz.tbi
+|--NA12878.H06HDADXX130110.1.bqsr.recal.table
 |--NA12878.H06HDADXX130110.1.chrX_female.g.vcf.gz
 |--NA12878.H06HDADXX130110.1.chrX_female.g.vcf.gz.tbi
 |--NA12878.H06HDADXX130110.1.chrX_male.g.vcf.gz
@@ -158,6 +167,57 @@ Output files will be saved in the directory `/path/to/working/directory/tutorial
 |--NA12878.PAR.g.vcf.gz.tbi
 |--NA12878.autosome.g.vcf.gz
 |--NA12878.autosome.g.vcf.gz.tbi
+|--NA12878.bqsr.recal.table
+|--NA12878.chrX_female.g.vcf.gz
+|--NA12878.chrX_female.g.vcf.gz.tbi
+|--NA12878.chrX_male.g.vcf.gz
+|--NA12878.chrX_male.g.vcf.gz.tbi
+|--NA12878.chrY.g.vcf.gz
+|--NA12878.chrY.g.vcf.gz.tbi
+|--NA12878.cram
+|--NA12878.cram.crai
+```
+
+## Tutorial 3: Run `germline-gpu.cwl` workflow with --knownSites option
+Run `germline-gpu.cwl` workflow with --knownSites option.
+
+```
+$ cd /path/to/working/directory
+$ mkdir -p tutorial_03
+$ . cwlenv/bin/activate
+$ cwltool --singularity \
+    --outdir tutorial_03 \
+    WGSpipeline/Workflows/germline-gpu.cwl \
+    --ref reference_hg38/Homo_sapiens_assembly38.fasta \
+    --knownSites reference_hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz \
+    --knownSites reference_hg38/Homo_sapiens_assembly38.known_indels.vcf.gz \
+    --fq1 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06HDADXX130110.1\\tPL:ILLUMINA\\tPU:H06HDADXX130110.1\\tLB:H06HDADXX130110.1\\tSM:NA12878" \
+    --fq1 wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06HDADXX130110.2\\tPL:ILLUMINA\\tPU:H06HDADXX130110.2\\tLB:H06HDADXX130110.2\\tSM:NA12878" \
+    --fq1 wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06JUADXX130110.1\\tPL:ILLUMINA\\tPU:H06JUADXX130110.1\\tLB:H06JUADXX130110.1\\tSM:NA12878" \
+    --num_gpus 4 \
+    --prefix NA12878 \
+    --autosome_interval WGSpipeline/interval_files/autosome.bed \
+    --PAR_interval WGSpipeline/interval_files/PAR.bed \
+    --chrX_interval WGSpipeline/interval_files/chrX.bed \
+    --chrY_interval WGSpipeline/interval_files/chrY.bed
+```
+
+When `--knownSites` option is used, then BQSR will be applied and `<prefix>.bqsr.recla.table` file will not be empty. 
+
+Output files will be saved in the directory `/path/to/working/directory/tutorial_03`:
+```
+/path/to/working/directory/tutorial_03
+|--NA12878.PAR.g.vcf.gz
+|--NA12878.PAR.g.vcf.gz.tbi
+|--NA12878.autosome.g.vcf.gz
+|--NA12878.autosome.g.vcf.gz.tbi
+|--NA12878.bqsr.recal.table
 |--NA12878.chrX_female.g.vcf.gz
 |--NA12878.chrX_female.g.vcf.gz.tbi
 |--NA12878.chrX_male.g.vcf.gz

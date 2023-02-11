@@ -36,6 +36,12 @@ inputs:
       - .64.sa
       - .64.alt
 
+  knownSites:
+    type: File[]?
+    doc: A known indels file. The file must be in vcf.gz format. This option can be used multiple times.
+    secondaryFiles:
+      - .tbi
+
   bwa_options:
     type: string?
     default: "-T 0 -Y"
@@ -68,6 +74,7 @@ steps:
     run: ../Tools/pbrun-fq2cram-multiRGs.cwl
     in:
       ref: ref
+      knownSites: knownSites
       fq1: fq1
       fq2: fq2
       rg: rg
@@ -76,6 +83,7 @@ steps:
       prefix: prefix
     out:
       - cram
+      - recal
 
   haplotypecaller_autosome:
     run: ../Tools/pbrun-haplotypecaller-from-cram.cwl
@@ -156,6 +164,10 @@ outputs:
   cram:
     type: File
     outputSource: fq2cram/cram
+
+  recal:
+    type: File
+    outputSource: fq2cram/recal
 
   gvcf_autosome:
     type: File
