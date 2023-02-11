@@ -25,6 +25,19 @@ $ cwltool --version
 /path/to/working/directory/cwlenv/bin/cwltool 3.1.20230201224320
 ```
 
+## Clone this repository
+Clone this repository by executing the following commands:
+```
+$ cd /path/to/working/directory/
+$ git clone https://github.com/NCGM-genome/WGSpipeline.git
+```
+
+## Download reference and resource files
+Download reference and resource files from the URLs listed in [reference_hg38.download_links.txt](./download_links/reference_hg38.download_links.txt) by executing the following commnds:
+```
+$ cd /path/to/working/directory/
+$ OUTDIR=reference_hg38 ; mkdir -p $OUTDIR ; for url in `cat sauerkraut/download_links/reference_hg38.download_links.txt` ; do echo $url ; fi
+```
 
 ## Usage
 
