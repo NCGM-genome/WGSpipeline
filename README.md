@@ -1,7 +1,9 @@
 # WGSpipeline
 
 This repository contains the following workflow:
-- **`germline-gpu.cwl`:** This workflow calculates `cram` and `gvcf` files from `fastq` files using `parabricks` version 4.0.0.
+- **`germline-gpu.cwl`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy. 
+
+<img src="./germline-gpu.png" width=100%>
 
 ## Installation requirements
 - [Hardware requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#hardware-requirements)
