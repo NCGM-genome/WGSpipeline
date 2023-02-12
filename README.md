@@ -107,7 +107,7 @@ $ cwltool --singularity \
     --chrX_interval WGSpipeline/interval_files/chrX.bed \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
-When `--knownSites` option is not used, then BQSR will not be applied and `<prefix>.bqsr.recla.table` file will be empty. 
+When `--knownSites` option is not used, then empty BQSR table file `<prefix>.bqsr.recla.table` will be created. 
 
 Output files will be saved in the directory `/path/to/working/directory/tutorial_01`:
 ```
@@ -208,7 +208,8 @@ $ cwltool --singularity \
     --chrY_interval WGSpipeline/interval_files/chrY.bed
 ```
 
-When `--knownSites` option is used, then BQSR will be applied and `<prefix>.bqsr.recla.table` file will not be empty. 
+When `--knownSites` option is used, then non-empty BQSR table file `<prefix>.bqsr.recla.table` will be created. 
+Note that BQSR is not applied to the output cram file. 
 
 Output files will be saved in the directory `/path/to/working/directory/tutorial_03`:
 ```
