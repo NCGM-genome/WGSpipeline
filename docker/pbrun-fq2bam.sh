@@ -56,7 +56,7 @@ for i in `seq 1 ${#KNOWNS[*]}` ; do
     infq="$infq --knownSites ${KNOWNS[i-1]}"
 done
 
-if [ $KNOWN_SITES != "" ] ; then
+if [ "$KNOWN_SITES" != "" ] ; then
     echo "
     pbrun fq2bam \
 	--ref ${REF} \
