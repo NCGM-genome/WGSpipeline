@@ -10,7 +10,7 @@ $namespaces:
 
 requirements:
   DockerRequirement:
-    dockerPull: hacchy/pbrun-fq2bam:4.0.0-1_v20230211
+    dockerPull: hacchy/pbrun-fq2bam:4.0.0-1_v20230412
   ShellCommandRequirement: {}
 
 hints:
