@@ -15,7 +15,7 @@ requirements:
 
 hints:
   cwltool:CUDARequirement:
-    cudaVersionMin: "11.4"
+    cudaVersionMin: "11.0"
     cudaComputeCapabilityMin: "3.0"
     deviceCountMin: 1
     deviceCountMax: 8
