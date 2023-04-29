@@ -230,3 +230,35 @@ Output files will be saved in the directory `/path/to/working/directory/tutorial
 |--NA12878.cram
 |--NA12878.cram.crai
 ```
+
+## Offline execution
+To run our workflow on an offline server, the following steps are required.
+1. Create a singularity image on another computer that can connect to the Internet by running the workflow once. Then the *.sif file(s) will be created. Note that the difference in OS and Singularity version between offline and online servers will not be a problem in most cases.
+2. Upload the *.sif file(s) to the offline server and locate the file(s) in the working directory.
+3. Execute our workflow on the offline server with `--disable-js-validation`. 
+
+
+```
+# Example of execution command with --disable-js-validation option
+$ cd /path/to/working/directory
+$ mkdir -p tutorial_01
+$ . cwlenv/bin/activate
+$ cwltool --singularity \
+    --outdir tutorial_01 \
+    --disable-js-validation \
+    WGSpipeline/Workflows/germline-gpu.cwl \
+    --ref reference_hg38/Homo_sapiens_assembly38.fasta \
+    --fq1 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq \
+    --fq2 wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq \
+    --rg "@RG\\tID:NA12878.H06HDADXX130110.1\\tPL:ILLUMINA\\tPU:H06HDADXX130110.1\\tLB:H06HDADXX130110.1\\tSM:NA12878" \
+    --num_gpus 4 \
+    --prefix NA12878.H06HDADXX130110.1 \
+    --autosome_interval WGSpipeline/interval_files/autosome.bed \
+    --PAR_interval WGSpipeline/interval_files/PAR.bed \
+    --chrX_interval WGSpipeline/interval_files/chrX.bed \
+    --chrY_interval WGSpipeline/interval_files/chrY.bed
+```
+
+
+
+
