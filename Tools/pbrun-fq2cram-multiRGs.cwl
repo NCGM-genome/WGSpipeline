@@ -16,9 +16,9 @@ requirements:
 hints:
   cwltool:CUDARequirement:
     cudaVersionMin: "11.0"
-    cudaComputeCapabilityMin: "3.0"
-    deviceCountMin: 1
-    deviceCountMax: 8
+    cudaComputeCapability: "3.0"
+    cudaDeviceCountMin: 1
+    cudaDeviceCountMax: 8
 
 baseCommand: [bash, /tools/pbrun-fq2bam.sh]
 
