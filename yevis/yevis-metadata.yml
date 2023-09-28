@@ -5,6 +5,7 @@ license: CC0-1.0
 authors:
   - github_account: hacchy1983
     name: Tsuyoshi Hachiya
+    affiliation: Genome Analytics Japan Inc.
     orcid: 0000-0002-5274-3266
 workflow:
   name: germline-gpu
