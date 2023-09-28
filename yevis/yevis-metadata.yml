@@ -64,8 +64,8 @@ workflow:
 	- url: "https://storage.googleapis.com/gatk-test-data/wgs_fastq/NA12878_20k/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq"
 	  target: H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq
 	  type: other
-        - url: "https://example.com/path/to/wf_params.json"
-          target: wf_params.json
+        - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/yevis/wf-params.yml"
+          target: wf-params.yml
           type: wf_params
 #        - url: "https://example.com/path/to/wf_engine_params.json"
 #          target: wf_engine_params.json

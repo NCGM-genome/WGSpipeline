@@ -1,0 +1,24 @@
+rg: "@RG\\tID:NA12878.H06HDADXX130110.1\\tPL:ILLUMINA\\tPU:H06HDADXX130110.1\\tLB:H06HDADXX130110.1\\tSM:NA12878"
+ref: 
+    class: File
+    path: Homo_sapiens_assembly38.fasta
+prefix: "NA12878.H06HDADXX130110.1"
+num_gpus: 4
+fq1:  
+  - class: File
+    path: H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq
+fq2: 
+  - class: File
+    path: H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq
+autosome_interval: 
+    class: File
+    path: autosome.bed
+PAR_interval: 
+    class: File
+    path: PAR.bed
+chrX_interval: 
+    class: File
+    path: chrX.bed
+chrY_interval: 
+    class: File
+    path: chrY.bed
