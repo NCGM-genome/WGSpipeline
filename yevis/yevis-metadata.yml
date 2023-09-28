@@ -8,62 +8,62 @@ authors:
     orcid: 0000-0002-5274-3266
 workflow:
   name: germline-gpu
-  readme: "https://raw.githubusercontent.com/NCGM-genome/WGSpipeline/main/README.md"
+  readme: "https://github.com/NCGM-genome/WGSpipeline/blob/main/README.md"
   language:
     type: CWL
     version: v1.1
   files:
-    - url: "https://raw.githubusercontent.com/NCGM-genome/WGSpipeline/main/Workflows/germline-gpu.cwl"
+    - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/Workflows/germline-gpu.cwl"
       target: germline-gpu.cwl
       type: primary
   testing:
     - id: test_1
       files:
         - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta"
-	  target: Homo_sapiens_assembly38.fasta
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai"
-	  target: Homo_sapiens_assembly38.fasta.fai
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict"
-	  target: Homo_sapiens_assembly38.dict
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.alt"
-	  target: Homo_sapiens_assembly38.fasta.64.alt
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.amb"
-	  target: Homo_sapiens_assembly38.fasta.64.amb
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.ann"
-	  target: Homo_sapiens_assembly38.fasta.64.ann
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.bwt"
-	  target: Homo_sapiens_assembly38.fasta.64.bwt
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.pac"
-	  target: Homo_sapiens_assembly38.fasta.64.pac
-	  type: other
-	- url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.sa"
-	  target: Homo_sapiens_assembly38.fasta.64.sa
-	  type: other
-	- url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/autosome.bed"
-	  target: autosome.bed
-	  type: other
-	- url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/PAR.bed"
-	  target: PAR.bed
-	  type: other
-	- url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/chrX.bed"
-	  target chrX.bed
-	  type: other
-	- url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/chrY.bed"
-	  target: chrY.bed
-	  type: other
-	- url: "https://storage.googleapis.com/gatk-test-data/wgs_fastq/NA12878_20k/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq"
-	  target: H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq
-	  type: other
-	- url: "https://storage.googleapis.com/gatk-test-data/wgs_fastq/NA12878_20k/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq"
-	  target: H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq
-	  type: other
+          target: Homo_sapiens_assembly38.fasta
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai"
+          target: Homo_sapiens_assembly38.fasta.fai
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict"
+          target: Homo_sapiens_assembly38.dict
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.alt"
+          target: Homo_sapiens_assembly38.fasta.64.alt
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.amb"
+          target: Homo_sapiens_assembly38.fasta.64.amb
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.ann"
+          target: Homo_sapiens_assembly38.fasta.64.ann
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.bwt"
+          target: Homo_sapiens_assembly38.fasta.64.bwt
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.pac"
+          target: Homo_sapiens_assembly38.fasta.64.pac
+          type: other
+        - url: "https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.64.sa"
+          target: Homo_sapiens_assembly38.fasta.64.sa
+          type: other
+        - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/autosome.bed"
+          target: autosome.bed
+          type: other
+        - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/PAR.bed"
+          target: PAR.bed
+          type: other
+        - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/chrX.bed"
+          target: chrX.bed
+          type: other
+        - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/interval_files/chrY.bed"
+          target: chrY.bed
+          type: other
+        - url: "https://storage.googleapis.com/gatk-test-data/wgs_fastq/NA12878_20k/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq"
+          target: H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq
+          type: other
+        - url: "https://storage.googleapis.com/gatk-test-data/wgs_fastq/NA12878_20k/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq"
+          target: H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq
+          type: other
         - url: "https://github.com/NCGM-genome/WGSpipeline/blob/main/yevis/wf-params.yml"
           target: wf-params.yml
           type: wf_params
