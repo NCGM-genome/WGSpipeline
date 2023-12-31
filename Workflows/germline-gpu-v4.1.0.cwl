@@ -83,6 +83,7 @@ steps:
       fq1: fq1
       fq2: fq2
       rg: rg
+      low_memory: low_memory
       bwa_options: bwa_options
       num_gpus: num_gpus
       prefix: prefix
