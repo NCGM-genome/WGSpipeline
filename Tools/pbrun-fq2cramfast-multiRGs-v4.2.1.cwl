@@ -77,7 +77,7 @@ inputs:
 
   bwa_options:
     type: string?
-    default: "-T 0 -Y"
+    default: "-Y"
     inputBinding: 
       position: 5
 

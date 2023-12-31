@@ -49,7 +49,7 @@ inputs:
 
   bwa_options:
     type: string?
-    default: "-T 0 -Y"
+    default: "-Y"
 
   num_gpus:
     type: int
