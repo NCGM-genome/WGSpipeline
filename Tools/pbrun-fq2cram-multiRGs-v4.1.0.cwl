@@ -20,7 +20,7 @@ hints:
     cudaDeviceCountMin: 1
     cudaDeviceCountMax: 8
 
-baseCommand: [bash, /tools/pbrun-fq2bam.sh]
+baseCommand: [bash, /tools/pbrun-fq2bam-v4.1.0+.sh]
 
 inputs:
   fq1:
@@ -67,6 +67,13 @@ inputs:
     inputBinding: 
       position: 9
       itemSeparator: ","
+
+  low_memory:
+    type: boolean?
+    doc: Flag whether use --low-memory option
+    default: false
+    inputBinding:
+      position: 10
 
   bwa_options:
     type: string?

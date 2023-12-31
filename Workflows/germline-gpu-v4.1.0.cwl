@@ -42,6 +42,11 @@ inputs:
     secondaryFiles:
       - .tbi
 
+  low_memory:
+    type: boolean?
+    doc: Flag whether use --low-memory option
+    default: false
+
   bwa_options:
     type: string?
     default: "-T 0 -Y"
