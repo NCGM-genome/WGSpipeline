@@ -1,0 +1,8 @@
+FROM nvcr.io/nvidia/clara/clara-parabricks:4.2.1-1
+LABEL maintainer="hacchy_1983@mac.com"
+
+WORKDIR /tools
+
+COPY pbrun-fq2bamfast-v4.2.1+.sh .
+
+CMD ["/bin/bash"]
