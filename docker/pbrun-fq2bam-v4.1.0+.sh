@@ -8,8 +8,8 @@ bwa_options=$5
 num_gpus=$6
 prefix=$7
 mode=$8
-KNOWN_SITES=$9
-low_memory=$10
+low_memory=$9
+KNOWN_SITES=$10
 
 echo "FQ1          = $FQ1"
 echo "FQ2          = $FQ2"

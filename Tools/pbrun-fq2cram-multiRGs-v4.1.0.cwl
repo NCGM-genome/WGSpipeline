@@ -65,7 +65,7 @@ inputs:
     secondaryFiles:
       - .tbi
     inputBinding: 
-      position: 9
+      position: 10
       itemSeparator: ","
 
   low_memory:
@@ -73,7 +73,7 @@ inputs:
     doc: Flag whether use --low-memory option
     default: false
     inputBinding:
-      position: 10
+      position: 9
 
   bwa_options:
     type: string?
