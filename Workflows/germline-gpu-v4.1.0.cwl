@@ -43,9 +43,9 @@ inputs:
       - .tbi
 
   low_memory:
-    type: boolean?
+    type: string?
     doc: Flag whether use --low-memory option
-    default: false
+    default: "false"
 
   bwa_options:
     type: string?
