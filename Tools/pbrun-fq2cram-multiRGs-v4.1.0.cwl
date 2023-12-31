@@ -69,9 +69,9 @@ inputs:
       itemSeparator: ","
 
   low_memory:
-    type: boolean?
+    type: string?
     doc: Flag whether use --low-memory option
-    default: false
+    default: "false"
     inputBinding:
       position: 9
 

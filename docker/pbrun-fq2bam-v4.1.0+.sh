@@ -59,7 +59,7 @@ for i in `seq 1 ${#KNOWNS[*]}` ; do
 done
 
 if [ "$KNOWN_SITES" != "" ] ; then
-    if [ $low_memory ] ; then
+    if [ $low_memory == "true" ] ; then
 	echo "
 	pbrun fq2bam \
 	      --ref ${REF} \
@@ -101,7 +101,7 @@ if [ "$KNOWN_SITES" != "" ] ; then
 	      --out-recal-file $recalfile
     fi
 else 
-    if [ $low_memory ] ; then
+    if [ $low_memory == "true" ] ; then
 	echo "
 	pbrun fq2bam \
 	      --ref ${REF} \
