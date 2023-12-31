@@ -62,7 +62,7 @@ fi
 
 infq=""
 for i in `seq 1 ${#RGS[*]}` ; do 
-    infq="$infq --in-fq ${FQ1S[i-1]} ${FQ2S[i-1]} ${RGS[i-1]}"
+    infq="$infq --in-fq ${FQ1S[i-1]} ${FQ2S[i-1]} \"${RGS[i-1]}\""
 done
 
 known=""    

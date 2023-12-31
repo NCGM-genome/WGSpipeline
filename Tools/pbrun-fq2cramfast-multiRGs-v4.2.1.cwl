@@ -10,7 +10,7 @@ $namespaces:
 
 requirements:
   DockerRequirement:
-    dockerPull: hacchy/pbrun-fq2bamfast:4.2.1-1_v20231231
+    dockerPull: hacchy/pbrun-fq2bamfast:4.2.1-1_v20240101
   ShellCommandRequirement: {}
 
 hints:
@@ -77,7 +77,7 @@ inputs:
 
   bwa_options:
     type: string?
-    default: "-Y"
+    default: "\"-Y\""
     inputBinding: 
       position: 5
 
