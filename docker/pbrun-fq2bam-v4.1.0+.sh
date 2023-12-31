@@ -9,7 +9,7 @@ num_gpus=$6
 prefix=$7
 mode=$8
 low_memory=$9
-KNOWN_SITES=$10
+KNOWN_SITES=${10}
 
 echo "FQ1          = $FQ1"
 echo "FQ2          = $FQ2"
@@ -31,6 +31,18 @@ else
     echo "Invalid mode: $mode. Only cram or bam is allowed."
     exit
 fi
+
+if [ $low_memory == "false" ] ; then
+    echo "Low memory mode: off"
+elif [ $low_memory == "true" ] ; then
+    echo "Low memory mode: on"
+else
+    echo "Invalid low memory mode: $low_memory. Only false or ture is allowed."
+    exit
+fi
+    
+
+
 recalfile="$prefix.bqsr.recal.table"
 
 FQ1S=(${FQ1//","/ })
