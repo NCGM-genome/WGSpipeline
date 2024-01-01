@@ -60,15 +60,14 @@ if [ ${#RGS[*]} != ${#FQ2S[*]} ] ; then
     exit
 fi
 
-infq=""
+infqfile="$prefix.in_fq_list"
 for i in `seq 1 ${#RGS[*]}` ; do 
-#    infq="$infq --in-fq ${FQ1S[i-1]} ${FQ2S[i-1]} \"${RGS[i-1]}\""
-    infq="$infq --in-fq ${FQ1S[i-1]} ${FQ2S[i-1]}"
+    echo "${FQ1S[i-1]} ${FQ2S[i-1]} \"${RGS[i-1]}\"" >> $infqfile
 done
 
 known=""    
 for i in `seq 1 ${#KNOWNS[*]}` ; do 
-    infq="$infq --knownSites ${KNOWNS[i-1]}"
+    known="$infq --knownSites ${KNOWNS[i-1]}"
 done
 
 if [ "$KNOWN_SITES" != "" ] ; then
@@ -76,9 +75,10 @@ if [ "$KNOWN_SITES" != "" ] ; then
 	echo "
 	pbrun fq2bamfast \
 	      --ref ${REF} \
+	      --in-fq-list ${infqfile} \
 	      $infq \
 	      $known \
-	      --bwa-options "${bwa_options}" \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile \
 	      --out-recal-file $recalfile \
@@ -86,9 +86,9 @@ if [ "$KNOWN_SITES" != "" ] ; then
 
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
+	      --in-fq-list ${infqfile} \
 	      $known \
-	      --bwa-options "${bwa_options}" \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile \
 	      --out-recal-file $recalfile \
@@ -97,18 +97,18 @@ if [ "$KNOWN_SITES" != "" ] ; then
 	echo "
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
+	      --in-fq-list ${infqfile} \
 	      $known \
-	      --bwa-options "${bwa_options}" \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile \
 	      --out-recal-file $recalfile"
 
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
+	      --in-fq-list ${infqfile} \
 	      $known \
-	      --bwa-options "${bwa_options}" \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile \
 	      --out-recal-file $recalfile
@@ -118,16 +118,16 @@ else
 	echo "
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
+	      --in-fq-list ${infqfile} \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile \
 	      --low-memory"
 
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
+	      --in-fq-list ${infqfile} \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile \
 	      --low-memory
@@ -135,15 +135,15 @@ else
 	echo "
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
+	      --in-fq-list ${infqfile} \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile"
 
 	pbrun fq2bamfast \
 	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
+	      --in-fq-list ${infqfile} \
+	      --bwa-options="${bwa_options}" \
 	      --num-gpus $num_gpus \
 	      --out-bam $outfile
     fi
