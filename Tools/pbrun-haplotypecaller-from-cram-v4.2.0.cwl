@@ -12,6 +12,7 @@ requirements:
   DockerRequirement:
     dockerPull: nvcr.io/nvidia/clara/clara-parabricks:4.2.0-1
   ShellCommandRequirement: {}
+  InlineJavascriptRequirement: {}
 
 hints:
   cwltool:CUDARequirement:
@@ -64,6 +65,11 @@ inputs:
     type: string
     doc: Output file prefix
 
+  htvc_low_memory:
+    type: boolean?
+    default: false
+    doc: Use low memory mode in htvc
+
 outputs:
   gvcf:
     type: File
@@ -78,4 +84,11 @@ arguments:
     valueFrom: $(inputs.prefix).g.vcf.gz
   - position: 7
     valueFrom: --gvcf
+  - position: 8
+    valueFrom: |
+      ${
+        return inputs.htvc_low_memory ? "--htvc-low-memory" : "" ; 
+      }
+    shellQuote: false
+
 

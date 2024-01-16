@@ -74,6 +74,11 @@ inputs:
     type: File
     doc: Interval BED file for chrY regions
 
+  htvc_low_memory:
+    type: boolean?
+    default: false
+    doc: Use low memory mode in htvc
+
 steps:
   fq2cram:
     run: ../Tools/pbrun-fq2cram-multiRGs-v4.2.1.cwl
@@ -103,6 +108,7 @@ steps:
       tmpprefix: prefix
       prefix: 
         valueFrom: $(inputs.tmpprefix).autosome
+      htvc_low_memory: htvc_low_memory
     out: 
       - gvcf
 
@@ -118,6 +124,7 @@ steps:
       tmpprefix: prefix
       prefix: 
         valueFrom: $(inputs.tmpprefix).PAR
+      htvc_low_memory: htvc_low_memory
     out: 
       - gvcf
 
@@ -133,6 +140,7 @@ steps:
       tmpprefix: prefix
       prefix: 
         valueFrom: $(inputs.tmpprefix).chrX_female
+      htvc_low_memory: htvc_low_memory
     out: 
       - gvcf
 
@@ -148,6 +156,7 @@ steps:
       tmpprefix: prefix
       prefix: 
         valueFrom: $(inputs.tmpprefix).chrX_male
+      htvc_low_memory: htvc_low_memory
     out: 
       - gvcf
 
@@ -163,6 +172,7 @@ steps:
       tmpprefix: prefix
       prefix: 
         valueFrom: $(inputs.tmpprefix).chrY
+      htvc_low_memory: htvc_low_memory
     out: 
       - gvcf
 
