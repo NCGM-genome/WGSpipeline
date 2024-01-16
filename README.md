@@ -96,6 +96,7 @@ $ cd /path/to/working/directory
 $ mkdir -p tutorial_01
 $ . cwlenv/bin/activate
 $ cwltool --singularity \
+    --enable-ext \
     --outdir tutorial_01 \
     WGSpipeline/Workflows/germline-gpu.cwl \
     --ref reference_hg38/Homo_sapiens_assembly38.fasta \
@@ -142,6 +143,7 @@ $ cd /path/to/working/directory
 $ mkdir -p tutorial_02
 $ . cwlenv/bin/activate
 $ cwltool --singularity \
+    --enable-ext \
     --outdir tutorial_02 \
     WGSpipeline/Workflows/germline-gpu.cwl \
     --ref reference_hg38/Homo_sapiens_assembly38.fasta \
@@ -188,6 +190,7 @@ $ cd /path/to/working/directory
 $ mkdir -p tutorial_03
 $ . cwlenv/bin/activate
 $ cwltool --singularity \
+    --enable-ext \
     --outdir tutorial_03 \
     WGSpipeline/Workflows/germline-gpu.cwl \
     --ref reference_hg38/Homo_sapiens_assembly38.fasta \
@@ -244,6 +247,7 @@ $ cd /path/to/working/directory
 $ mkdir -p tutorial_01
 $ . cwlenv/bin/activate
 $ cwltool --singularity \
+    --enable-ext \
     --outdir tutorial_01 \
     --disable-js-validation \
     WGSpipeline/Workflows/germline-gpu.cwl \
