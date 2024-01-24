@@ -10,7 +10,7 @@ $namespaces:
 
 requirements:
   DockerRequirement:
-    dockerPull: hacchy/pbrun-fq2bam:4.2.1-1_v20231231
+    dockerPull: hacchy/pbrun-fq2bam:4.2.1-1_v20240124
   ShellCommandRequirement: {}
 
 hints:
@@ -65,7 +65,7 @@ inputs:
     secondaryFiles:
       - .tbi
     inputBinding: 
-      position: 10
+      position: 12
       itemSeparator: ","
 
   low_memory:
@@ -92,6 +92,20 @@ inputs:
     inputBinding:
       position: 7
 
+  gpuwrite:
+    type: string?
+    default: "false"
+    doc: Use one GPU to accelerate writing final BAM
+    inputBinding:
+      position: 10
+
+  gpusort:
+    type: string?
+    default: "false"
+    doc: Use GPUs to accelerate sorting and marking
+    inputBinding:
+      position: 11
+
 outputs:
   cram:
     type: File
@@ -107,3 +121,6 @@ outputs:
 arguments:
   - position: 8
     valueFrom: cram
+  
+
+
