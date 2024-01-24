@@ -47,6 +47,16 @@ inputs:
     doc: Flag whether use --low-memory option
     default: "false"
 
+  gpuwrite:
+    type: string?
+    default: "false"
+    doc: Use one GPU to accelerate writing final BAM
+
+  gpusort:
+    type: string?
+    default: "false"
+    doc: Use GPUs to accelerate sorting and marking
+
   bwa_options:
     type: string?
     default: "-T 0 -Y"
@@ -89,6 +99,8 @@ steps:
       fq2: fq2
       rg: rg
       low_memory: low_memory
+      gpuwrite: gpuwrite
+      gpusort: gpusort
       bwa_options: bwa_options
       num_gpus: num_gpus
       prefix: prefix

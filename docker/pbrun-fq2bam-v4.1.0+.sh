@@ -36,12 +36,12 @@ else
     exit
 fi
 
-$additional_options=""
+additional_options=""
 if [ $low_memory == "false" ] ; then
     echo "Low memory mode: off"
 elif [ $low_memory == "true" ] ; then
     echo "Low memory mode: on"
-    $additional_options = "$additional_options --low-memory"
+    additional_options="$additional_options --low-memory"
 else
     echo "Invalid low memory mode: $low_memory. Only false or ture is allowed."
     exit
@@ -51,7 +51,7 @@ if [ $gpuwrite == "false" ] ; then
     echo "gpuwrite: off"
 elif [ $gpuwrite == "true" ] ; then
     echo "gpuwrite: on"
-    $additional_options = "$additional_options --gpuwrite"
+    additional_options="$additional_options --gpuwrite"
 else
     echo "Invalid gpuwrite parameter: $gpuwrite. Only false or ture is allowed."
     exit
@@ -61,7 +61,7 @@ if [ $gpusort == "false" ] ; then
     echo "gpusort: off"
 elif [ $gpusort == "true" ] ; then
     echo "gpusort: on"
-    $additional_options = "$additional_options --gpusort"
+    additional_options="$additional_options --gpusort"
 else
     echo "Invalid gpuwrite parameter: $gpusort. Only false or ture is allowed."
     exit
@@ -105,7 +105,7 @@ if [ "$KNOWN_SITES" != "" ] ; then
 	  --bwa-options "${bwa_options}" \
 	  --num-gpus $num_gpus \
 	  --out-bam $outfile \
-	  --out-recal-file $recalfile 
+	  --out-recal-file $recalfile "
 
     pbrun fq2bam $additional_options \
 	  --ref ${REF} \
