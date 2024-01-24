@@ -9,7 +9,9 @@ num_gpus=$6
 prefix=$7
 mode=$8
 low_memory=$9
-KNOWN_SITES=${10}
+gpuwrite=${10}
+gpusort=${11}
+KNOWN_SITES=${12}
 
 echo "FQ1          = $FQ1"
 echo "FQ2          = $FQ2"
@@ -21,6 +23,8 @@ echo "num_gpus     = $num_gpus"
 echo "prefix       = $prefix"
 echo "mode         = $mode"
 echo "low_memory   = $low_memory"
+echo "gpuwrite     = $gpuwrite"
+echo "gpusort      = $gpusort"
 
 outfile=$prefix
 if [ $mode == "cram" ] ; then
@@ -32,15 +36,37 @@ else
     exit
 fi
 
+$additional_options=""
 if [ $low_memory == "false" ] ; then
     echo "Low memory mode: off"
 elif [ $low_memory == "true" ] ; then
     echo "Low memory mode: on"
+    $additional_options = "$additional_options --low-memory"
 else
     echo "Invalid low memory mode: $low_memory. Only false or ture is allowed."
     exit
 fi
-    
+
+if [ $gpuwrite == "false" ] ; then
+    echo "gpuwrite: off"
+elif [ $gpuwrite == "true" ] ; then
+    echo "gpuwrite: on"
+    $additional_options = "$additional_options --gpuwrite"
+else
+    echo "Invalid gpuwrite parameter: $gpuwrite. Only false or ture is allowed."
+    exit
+fi
+
+if [ $gpusort == "false" ] ; then
+    echo "gpusort: off"
+elif [ $gpusort == "true" ] ; then
+    echo "gpusort: on"
+    $additional_options = "$additional_options --gpusort"
+else
+    echo "Invalid gpuwrite parameter: $gpusort. Only false or ture is allowed."
+    exit
+fi
+
 
 
 recalfile="$prefix.bqsr.recal.table"
@@ -71,81 +97,39 @@ for i in `seq 1 ${#KNOWNS[*]}` ; do
 done
 
 if [ "$KNOWN_SITES" != "" ] ; then
-    if [ $low_memory == "true" ] ; then
-	echo "
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      $known \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile \
-	      --out-recal-file $recalfile \
-      	      --low-memory"
+    echo "
+    pbrun fq2bam $additional_options \
+	  --ref ${REF} \
+	  $infq \
+	  $known \
+	  --bwa-options "${bwa_options}" \
+	  --num-gpus $num_gpus \
+	  --out-bam $outfile \
+	  --out-recal-file $recalfile 
 
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      $known \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile \
-	      --out-recal-file $recalfile \
-	      --low-memory
-    else 
-	echo "
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      $known \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile \
-	      --out-recal-file $recalfile"
-
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      $known \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile \
-	      --out-recal-file $recalfile
-    fi
+    pbrun fq2bam $additional_options \
+	  --ref ${REF} \
+	  $infq \
+	  $known \
+	  --bwa-options "${bwa_options}" \
+	  --num-gpus $num_gpus \
+	  --out-bam $outfile \
+	  --out-recal-file $recalfile 
 else 
-    if [ $low_memory == "true" ] ; then
-	echo "
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile \
-	      --low-memory"
+    echo "
+    pbrun fq2bam $additional_options \
+	  --ref ${REF} \
+	  $infq \
+	  --bwa-options "${bwa_options}" \
+	  --num-gpus $num_gpus \
+	  --out-bam $outfile "
 
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile \
-	      --low-memory
-    else
-	echo "
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile"
-
-	pbrun fq2bam \
-	      --ref ${REF} \
-	      $infq \
-	      --bwa-options "${bwa_options}" \
-	      --num-gpus $num_gpus \
-	      --out-bam $outfile
-    fi
+    pbrun fq2bam $additional_options \
+	  --ref ${REF} \
+	  $infq \
+	  --bwa-options "${bwa_options}" \
+	  --num-gpus $num_gpus \
+	  --out-bam $outfile 
 fi
     
 
