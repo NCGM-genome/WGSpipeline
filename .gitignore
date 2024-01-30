@@ -1,0 +1,9 @@
+*.sif
+*.DS_Store
+Nextflow-wf/.nextflow/
+Nextflow-wf/results
+Nextflow-wf/sing
+Nextflow-wf/work
+Nextflow-wf/.nextflow.log*
+Nextflow-wf/.nextflow.log
+Nextflow-wf/nextflow.config
