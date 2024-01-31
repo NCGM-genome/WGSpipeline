@@ -5,7 +5,6 @@ params.ploidy = 2
 
 process fq2cram {
     publishDir params.outdir, mode:'copy'
-    label 'gpu'
 
     input:
     path fq1
@@ -30,12 +29,12 @@ process fq2cram {
 
 process HC_autosome {
     publishDir params.outdir, mode:'copy'
-    label 'gpu'
+    label 'haplotypecaller'
 
     input:
     path ref
     path out_cram
-    path interval_file
+    path autosome_interval
     val ploidy
     val num_gpus
     val HC_autosome_out
@@ -45,7 +44,28 @@ process HC_autosome {
 
     script:
     """
-    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $interval_file --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_autosome_out --gvcf
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $autosome_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_autosome_out --gvcf
+    """
+}
+
+process HC_PAR {
+    publishDir params.outdir, mode:'copy'
+    label 'haplotypecaller'
+
+    input:
+    path ref
+    path out_cram
+    path PAR_interval
+    val ploidy
+    val num_gpus
+    val HC_PAR_out
+
+    output:
+    path "${HC_PAR_out}", emit: gvcf
+
+    script:
+    """
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $PAR_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_PAR_out --gvcf
     """
 }
 
@@ -62,14 +82,19 @@ workflow {
     // knownSites = Channel.fromPath(params.knownSites)
     // #### HC_autosome ch####
     HC_autosome_out = prefix.map { it + ".autosome.g.vcf.gz" }
-    interval_file = Channel.fromPath(params.interval_file)
+    autosome_interval = Channel.fromPath(params.autosome_interval)
     ploidy = Channel.of(params.ploidy)
+    // #### HC_PAR ch####
+    HC_PAR_out = prefix.map { it + ".PAR.g.vcf.gz" }
+    PAR_interval = Channel.fromPath(params.PAR_interval)
 
-    // ######## workflow ########
+    // ################ workflow ################
     // #### fq2cram ####
     fq2cram_out = fq2cram(fq1, fq2, rg, ref, bwa_options, prefix, num_gpus, mode)
     out_cram = fq2cram_out.cram
     out_recal = fq2cram_out.recal
     // #### HC_autosome ####
-    out_gvcf_autosome = HC_autosome(ref, out_cram, interval_file, ploidy, num_gpus, HC_autosome_out)
+    out_gvcf_autosome = HC_autosome(ref, out_cram, autosome_interval, ploidy, num_gpus, HC_autosome_out)
+    // #### HC_PAR####
+    out_gvcf_PAR = HC_PAR(ref, out_cram, PAR_interval, ploidy, num_gpus, HC_PAR_out)
 }
