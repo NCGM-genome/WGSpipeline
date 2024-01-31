@@ -19,7 +19,8 @@ process fq2cram {
 
     output:
     path "${prefix}.${mode}", emit: cram
-    path "${prefix}.bqsr.recal.table", emit: recal
+    path "${prefix}.bqsr.recal.table"
+    path "${prefix}.${mode}.crai"
 
     script:
     """
@@ -41,6 +42,7 @@ process HC_autosome {
 
     output:
     path "${HC_autosome_out}", emit: gvcf
+    path "${HC_autosome_out}.tbi"
 
     script:
     """
@@ -62,6 +64,7 @@ process HC_PAR {
 
     output:
     path "${HC_PAR_out}", emit: gvcf
+    path "${HC_PAR_out}.tbi"
 
     script:
     """
@@ -83,6 +86,7 @@ process HC_chrX_female {
 
     output:
     path "${HC_chrX_female_out}", emit: gvcf
+    path "${HC_chrX_female_out}.tbi"
 
     script:
     """
@@ -104,6 +108,7 @@ process HC_chrX_male {
 
     output:
     path "${HC_chrX_male_out}", emit: gvcf
+    path "${HC_chrX_male_out}.tbi"
 
     script:
     """
@@ -125,6 +130,7 @@ process HC_chrY {
 
     output:
     path "${HC_chrY_out}", emit: gvcf
+    path "${HC_chrY_out}.tbi"
 
     script:
     """
@@ -164,15 +170,19 @@ workflow {
     // #### fq2cram ####
     fq2cram_out = fq2cram(fq1, fq2, rg, ref, bwa_options, prefix, num_gpus, mode)
     out_cram = fq2cram_out.cram
-    out_recal = fq2cram_out.recal
     // #### HC_autosome ####
-    out_gvcf_autosome = HC_autosome(ref, out_cram, autosome_interval, ploidy, num_gpus, HC_autosome_out)
+    HC_autosome = HC_autosome(ref, out_cram, autosome_interval, ploidy, num_gpus, HC_autosome_out)
+    out_gvcf_autosome = HC_autosome.gvcf
     // #### HC_PAR####
-    out_gvcf_PAR = HC_PAR(ref, out_cram, PAR_interval, ploidy, num_gpus, HC_PAR_out)
+    HC_PAR = HC_PAR(ref, out_cram, PAR_interval, ploidy, num_gpus, HC_PAR_out)
+    out_gvcf_PAR = HC_PAR.gvcf
     // #### HC_chrX_female####
-    out_gvcf_chrX_female = HC_chrX_female(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_female_out)
+    HC_chrX_female = HC_chrX_female(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_female_out)
+    out_gvcf_chrX_female = HC_chrX_female.gvcf
     // #### HC_chrX_male####
-    out_gvcf_chrX_male = HC_chrX_male(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_male_out)
+    HC_chrX_male = HC_chrX_male(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_male_out)
+    out_gvcf_chrX_male = HC_chrX_male.gvcf
     // #### HC_chrY####
-    out_gvcf_chrY = HC_chrY(ref, out_cram, chrY_interval, ploidy, num_gpus, HC_chrY_out)
+    HC_chrY = HC_chrY(ref, out_cram, chrY_interval, ploidy, num_gpus, HC_chrY_out)
+    out_gvcf_chrY = HC_chrY.gvcf
 }
