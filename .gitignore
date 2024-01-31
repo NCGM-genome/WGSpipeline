@@ -7,3 +7,4 @@ Nextflow-wf/work
 Nextflow-wf/.nextflow.log*
 Nextflow-wf/.nextflow.log
 Nextflow-wf/nextflow.config
+.nextflow.log
