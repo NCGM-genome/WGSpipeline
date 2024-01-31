@@ -1,7 +1,8 @@
 #!/usr/bin/env nextflow
 params.mode = 'cram'
 // params.outdir ='result'
-params.ploidy = 2
+params.ploidy_1 = 1
+params.ploidy_2 = 2
 
 process fq2cram {
     publishDir params.outdir, mode:'copy'
@@ -36,7 +37,7 @@ process HC_autosome {
     path ref
     path out_cram
     path autosome_interval
-    val ploidy
+    val ploidy_2
     val num_gpus
     val HC_autosome_out
 
@@ -46,7 +47,7 @@ process HC_autosome {
 
     script:
     """
-    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $autosome_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_autosome_out --gvcf
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $autosome_interval --ploidy $ploidy_2 --num-gpus $num_gpus --out-variants $HC_autosome_out --gvcf
     """
 }
 
@@ -58,7 +59,7 @@ process HC_PAR {
     path ref
     path out_cram
     path PAR_interval
-    val ploidy
+    val ploidy_2
     val num_gpus
     val HC_PAR_out
 
@@ -68,7 +69,7 @@ process HC_PAR {
 
     script:
     """
-    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $PAR_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_PAR_out --gvcf
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $PAR_interval --ploidy $ploidy_2 --num-gpus $num_gpus --out-variants $HC_PAR_out --gvcf
     """
 }
 
@@ -80,7 +81,7 @@ process HC_chrX_female {
     path ref
     path out_cram
     path chrX_interval
-    val ploidy
+    val ploidy_2
     val num_gpus
     val HC_chrX_female_out
 
@@ -90,7 +91,7 @@ process HC_chrX_female {
 
     script:
     """
-    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrX_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_chrX_female_out --gvcf
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrX_interval --ploidy $ploidy_2 --num-gpus $num_gpus --out-variants $HC_chrX_female_out --gvcf
     """
 }
 
@@ -102,7 +103,7 @@ process HC_chrX_male {
     path ref
     path out_cram
     path chrX_interval
-    val ploidy
+    val ploidy_1
     val num_gpus
     val HC_chrX_male_out
 
@@ -112,7 +113,7 @@ process HC_chrX_male {
 
     script:
     """
-    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrX_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_chrX_male_out --gvcf
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrX_interval --ploidy $ploidy_1 --num-gpus $num_gpus --out-variants $HC_chrX_male_out --gvcf
     """
 }
 
@@ -124,7 +125,7 @@ process HC_chrY {
     path ref
     path out_cram
     path chrY_interval
-    val ploidy
+    val ploidy_1
     val num_gpus
     val HC_chrY_out
 
@@ -134,7 +135,7 @@ process HC_chrY {
 
     script:
     """
-    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrY_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_chrY_out --gvcf
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrY_interval --ploidy $ploidy_1 --num-gpus $num_gpus --out-variants $HC_chrY_out --gvcf
     """
 }
 
@@ -152,7 +153,8 @@ workflow {
     // #### HC_autosome ch####
     HC_autosome_out = prefix.map { it + ".autosome.g.vcf.gz" }
     autosome_interval = Channel.fromPath(params.autosome_interval)
-    ploidy = Channel.of(params.ploidy)
+    ploidy_1 = Channel.of(params.ploidy_1)
+    ploidy_2 = Channel.of(params.ploidy_2)
     // #### HC_PAR ch####
     HC_PAR_out = prefix.map { it + ".PAR.g.vcf.gz" }
     PAR_interval = Channel.fromPath(params.PAR_interval)
@@ -171,18 +173,18 @@ workflow {
     fq2cram_out = fq2cram(fq1, fq2, rg, ref, bwa_options, prefix, num_gpus, mode)
     out_cram = fq2cram_out.cram
     // #### HC_autosome ####
-    HC_autosome = HC_autosome(ref, out_cram, autosome_interval, ploidy, num_gpus, HC_autosome_out)
+    HC_autosome = HC_autosome(ref, out_cram, autosome_interval, ploidy_2, num_gpus, HC_autosome_out)
     out_gvcf_autosome = HC_autosome.gvcf
     // #### HC_PAR####
-    HC_PAR = HC_PAR(ref, out_cram, PAR_interval, ploidy, num_gpus, HC_PAR_out)
+    HC_PAR = HC_PAR(ref, out_cram, PAR_interval, ploidy_2, num_gpus, HC_PAR_out)
     out_gvcf_PAR = HC_PAR.gvcf
     // #### HC_chrX_female####
-    HC_chrX_female = HC_chrX_female(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_female_out)
+    HC_chrX_female = HC_chrX_female(ref, out_cram, chrX_interval, ploidy_2, num_gpus, HC_chrX_female_out)
     out_gvcf_chrX_female = HC_chrX_female.gvcf
     // #### HC_chrX_male####
-    HC_chrX_male = HC_chrX_male(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_male_out)
+    HC_chrX_male = HC_chrX_male(ref, out_cram, chrX_interval, ploidy_1, num_gpus, HC_chrX_male_out)
     out_gvcf_chrX_male = HC_chrX_male.gvcf
     // #### HC_chrY####
-    HC_chrY = HC_chrY(ref, out_cram, chrY_interval, ploidy, num_gpus, HC_chrY_out)
+    HC_chrY = HC_chrY(ref, out_cram, chrY_interval, ploidy_1, num_gpus, HC_chrY_out)
     out_gvcf_chrY = HC_chrY.gvcf
 }
