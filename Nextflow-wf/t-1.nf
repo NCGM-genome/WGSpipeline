@@ -69,6 +69,69 @@ process HC_PAR {
     """
 }
 
+process HC_chrX_female {
+    publishDir params.outdir, mode:'copy'
+    label 'haplotypecaller'
+
+    input:
+    path ref
+    path out_cram
+    path chrX_interval
+    val ploidy
+    val num_gpus
+    val HC_chrX_female_out
+
+    output:
+    path "${HC_chrX_female_out}", emit: gvcf
+
+    script:
+    """
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrX_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_chrX_female_out --gvcf
+    """
+}
+
+process HC_chrX_male {
+    publishDir params.outdir, mode:'copy'
+    label 'haplotypecaller'
+
+    input:
+    path ref
+    path out_cram
+    path chrX_interval
+    val ploidy
+    val num_gpus
+    val HC_chrX_male_out
+
+    output:
+    path "${HC_chrX_male_out}", emit: gvcf
+
+    script:
+    """
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrX_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_chrX_male_out --gvcf
+    """
+}
+
+process HC_chrY {
+    publishDir params.outdir, mode:'copy'
+    label 'haplotypecaller'
+
+    input:
+    path ref
+    path out_cram
+    path chrY_interval
+    val ploidy
+    val num_gpus
+    val HC_chrY_out
+
+    output:
+    path "${HC_chrY_out}", emit: gvcf
+
+    script:
+    """
+    pbrun haplotypecaller --ref $ref --in-bam $out_cram --interval-file $chrY_interval --ploidy $ploidy --num-gpus $num_gpus --out-variants $HC_chrY_out --gvcf
+    """
+}
+
 workflow {
     // #### fq2cram ch####
     fq1 = Channel.fromPath(params.fq1)
@@ -87,6 +150,15 @@ workflow {
     // #### HC_PAR ch####
     HC_PAR_out = prefix.map { it + ".PAR.g.vcf.gz" }
     PAR_interval = Channel.fromPath(params.PAR_interval)
+    // #### HC_chrX_female ch####
+    HC_chrX_female_out = prefix.map { it + ".chrX_female.g.vcf.gz" }
+    chrX_interval = Channel.fromPath(params.chrX_interval)
+    // #### HC_chrX_male ch####
+    HC_chrX_male_out = prefix.map { it + ".chrX_male.g.vcf.gz" }
+    chrX_interval = Channel.fromPath(params.chrX_interval)
+    // #### HC_chrY ch####
+    HC_chrY_out = prefix.map { it + ".chrY.g.vcf.gz" }
+    chrY_interval = Channel.fromPath(params.chrY_interval)
 
     // ################ workflow ################
     // #### fq2cram ####
@@ -97,4 +169,10 @@ workflow {
     out_gvcf_autosome = HC_autosome(ref, out_cram, autosome_interval, ploidy, num_gpus, HC_autosome_out)
     // #### HC_PAR####
     out_gvcf_PAR = HC_PAR(ref, out_cram, PAR_interval, ploidy, num_gpus, HC_PAR_out)
+    // #### HC_chrX_female####
+    out_gvcf_chrX_female = HC_chrX_female(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_female_out)
+    // #### HC_chrX_male####
+    out_gvcf_chrX_male = HC_chrX_male(ref, out_cram, chrX_interval, ploidy, num_gpus, HC_chrX_male_out)
+    // #### HC_chrY####
+    out_gvcf_chrY = HC_chrY(ref, out_cram, chrY_interval, ploidy, num_gpus, HC_chrY_out)
 }
