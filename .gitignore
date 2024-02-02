@@ -6,5 +6,7 @@ Nextflow-wf/sing
 Nextflow-wf/work
 Nextflow-wf/.nextflow.log*
 Nextflow-wf/.nextflow.log
-Nextflow-wf/nextflow.config
 .nextflow.log
+Nextflow-wf/nextflow.config
+Nextflow-wf/data
+Nextflow-wf/*.config

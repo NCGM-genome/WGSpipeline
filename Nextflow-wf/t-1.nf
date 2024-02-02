@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 params.mode = 'cram'
-// params.outdir ='result'
+// params.outdir ='results'
 params.ploidy_1 = 1
 params.ploidy_2 = 2
 
