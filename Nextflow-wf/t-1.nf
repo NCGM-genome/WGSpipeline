@@ -1,6 +1,5 @@
 #!/usr/bin/env nextflow
 params.mode = 'cram'
-// params.outdir ='results'
 params.ploidy_1 = 1
 params.ploidy_2 = 2
 
@@ -188,3 +187,43 @@ workflow {
     HC_chrY = HC_chrY(ref, out_cram, chrY_interval, ploidy_1, num_gpus, HC_chrY_out)
     out_gvcf_chrY = HC_chrY.gvcf
 }
+
+// // sbatch fq2cram
+// process fq2cram {
+//     publishDir params.outdir, mode:'copy'
+
+//     input:
+//     path fq1
+//     path fq2
+//     val rg
+//     path ref
+//     val bwa_options
+//     val prefix
+//     val num_gpus
+//     val mode
+//     // path knownSites
+
+//     output:
+//     path "${prefix}.${mode}", emit: cram
+//     path "${prefix}.bqsr.recal.table"
+//     path "${prefix}.${mode}.crai"
+
+//     script:
+//     """
+//     bash /tools/pbrun-fq2bam.sh $fq1 $fq2 '$rg' $ref '$bwa_options' $num_gpus $prefix $mode ''
+//     """
+// }
+
+// workflow {
+//     // #### fq2cram ch####
+//     fq1 = Channel.fromPath(params.fq1)
+//     fq2 = Channel.fromPath(params.fq2)
+//     rg = Channel.of(params.rg)
+//     ref = Channel.fromPath(params.ref)
+//     bwa_options = Channel.of(params.bwa_options)
+//     prefix = Channel.of(params.prefix)
+//     num_gpus = Channel.of(params.num_gpus)
+//     mode = Channel.of(params.mode)
+//     // ################ workflow ################
+//     fq2cram(fq1, fq2, rg, ref, bwa_options, prefix, num_gpus, mode)
+// }
