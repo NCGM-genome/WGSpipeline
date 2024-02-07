@@ -152,13 +152,13 @@ workflow {
         .sort()
         .join(",")
     fq2_list = Channel.of(fq2_list)
-    // 「rg_*」にマッチするparamsの値を抽出してリスト化
+    // rg*にマッチするparamsの値を抽出してリスト化
     rg_list = params.findAll { it.key.startsWith('rg_') }
         .collect { it.value }
         .sort()
         .join(",")
     rg_list = Channel.of(rg_list)
-    // 「knownSites_*」にマッチするparamsの値を抽出してリスト化
+    // 「knownSites_*にマッチするparamsの値を抽出してリスト化
     knownSites_list = params.findAll { it.key.startsWith('knownSites_') }
         .collect { it.value }
         .sort()
