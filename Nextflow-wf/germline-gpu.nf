@@ -140,25 +140,25 @@ process HC_chrY {
 
 workflow {
     // #### fq2cram ch####
-    // 「fastq_reads_1_*」にマッチするparamsの値を抽出してリスト化
+    // find params fq1, and list to val by comma（,）
     fq1_list = params.findAll { it.key.startsWith('fastq_reads_1') }
         .collect { it.value }
         .sort()
         .join(",")
     fq1_list = Channel.of(fq1_list)
-    // 「fastq_reads_2_*」にマッチするparamsの値を抽出してリスト化
+    // find params fq2, and list to val by comma（,）
     fq2_list = params.findAll { it.key.startsWith('fastq_reads_2') }
         .collect { it.value }
         .sort()
         .join(",")
     fq2_list = Channel.of(fq2_list)
-    // 「rg_*」にマッチするparamsの値を抽出してリスト化
+    // find params rg(Read Group), and list to val by comma（,）
     rg_list = params.findAll { it.key.startsWith('rg_') }
         .collect { it.value }
         .sort()
         .join(",")
     rg_list = Channel.of(rg_list)
-    // 「knownSites_*」にマッチするparamsの値を抽出してリスト化
+    // find params knownSites, and list to val by comma（,）
     knownSites_list = params.findAll { it.key.startsWith('knownSites_') }
         .collect { it.value }
         .sort()
