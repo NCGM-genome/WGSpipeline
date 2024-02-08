@@ -1,9 +1,0 @@
-*.DS_Store
-Nextflow-wf/.nextflow/
-Nextflow-wf/results
-Nextflow-wf/work
-Nextflow-wf/data
-Nextflow-wf/.nextflow.log*
-Nextflow-wf/.nextflow.log
-*.config
-Nextflow-wf/tutorial_*
