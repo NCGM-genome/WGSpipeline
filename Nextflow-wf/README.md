@@ -1,9 +1,7 @@
 # WGSpipeline Nextflow
 
 This repository contains the following workflow:
-- **`germline-gpu.cwl`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy. 
-
-<img src="../germline-gpu.png" width=100%>
+- **`germline-gpu.nf`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl)
 
 ## Installation requirements
 - [Hardware requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#hardware-requirements)
@@ -141,8 +139,8 @@ Download a dataset for tutorial from the URLs listed in [wgs_fastq_NA12878_20k.d
 $ OUTDIR=wgs_fastq ; mkdir -p $OUTDIR ; for url in `cat ../download_links/wgs_fastq_NA12878_20k.download_links.txt` ; do echo $url ; file=`basename $url` ; if [ ! -f ${OUTDIR}/$file ] ; then wget $url -O ${OUTDIR}/$file ; fi ; done
 ```
 
-## Tutorial 1: Run  `germline-gpu.cwl` workflow with a pair of FASTQ files.
-Run `germline-gpu.cwl` workflow with a pair of FASTQ files. 
+## Tutorial 1: Run  `germline-gpu.nf` workflow with a pair of FASTQ files.
+Run `germline-gpu.nf` workflow with a pair of FASTQ files. 
 - execution
   ```
   nextflow run germline-gpu.nf -c nextflow.config
@@ -208,8 +206,8 @@ Output files will be saved in the directory `/path/to/working/directory/WGSpipel
 |--NA12878.H06HDADXX130110.1.cram.crai
 ```
 
-## Tutorial 2: Run `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
-Run `germline-gpu.cwl` workflow with multiple pairs of FASTQ files.
+## Tutorial 2: Run `germline-gpu.nf` workflow with multiple pairs of FASTQ files.
+Run `germline-gpu.nf` workflow with multiple pairs of FASTQ files.
 
 `fastq_reads_1_*`, `fastq_reads_2_*`, and `rg_*` params can be repeated multiple times. 
 The number of `fastq_reads_1_*` params should be same as the number of `fastq_reads_2_*` and `rg_*` params.
@@ -246,8 +244,8 @@ The number of `fastq_reads_1_*` params should be same as the number of `fastq_re
   params {
       outdir = 'tutorial_02'
       fastq_reads_1_1 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq'
-      fastq_reads_1_2 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_1.fastq'
-      fastq_reads_1_3 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_1.fastq'
+      fastq_reads_1_2 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_1.fastq'
+      fastq_reads_1_3 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_1.fastq'
       fastq_reads_2_1 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq'
       fastq_reads_2_2 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_2.fastq'
       fastq_reads_2_3 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_2.fastq'
@@ -283,8 +281,8 @@ Output files will be saved in the directory `/path/to/working/directory/WGSpipel
 |--NA12878.cram.crai
 ```
 
-## Tutorial 3: Run `germline-gpu.cwl` workflow with --knownSites option
-Run `germline-gpu.cwl` workflow with knownSites params.
+## Tutorial 3: Run `germline-gpu.nf` workflow with --knownSites option
+Run `germline-gpu.nf` workflow with knownSites params.
 
 - execution
   ```
@@ -292,7 +290,7 @@ Run `germline-gpu.cwl` workflow with knownSites params.
   ```
 - nextflow.config
   ```groovy
-    singularity {
+  singularity {
       enabled = true
   }
 
@@ -319,8 +317,8 @@ Run `germline-gpu.cwl` workflow with knownSites params.
   params {
       outdir = 'tutorial_03'
       fastq_reads_1_1 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_1.fastq'
-      fastq_reads_1_2 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_1.fastq'
-      fastq_reads_1_3 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_1.fastq'
+      fastq_reads_1_2 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_1.fastq'
+      fastq_reads_1_3 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_1.fastq'
       fastq_reads_2_1 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.1.ATCACGAT.20k_reads_2.fastq'
       fastq_reads_2_2 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06HDADXX130110.2.ATCACGAT.20k_reads_2.fastq'
       fastq_reads_2_3 = '/path/to/working/directory/WGSpipeline/Nextflow-wf/wgs_fastq/H06JUADXX130110.1.ATCACGAT.20k_reads_2.fastq'
