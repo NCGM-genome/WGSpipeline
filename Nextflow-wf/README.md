@@ -50,22 +50,22 @@ $ git clone https://github.com/NCGM-genome/WGSpipeline.git
 ```
 
 ## Preparation of `germline-gpu.nf` workflow
-- change Nextflow-wf directory
+- Change Nextflow-wf directory
   ```
   cd WGSpipeline/Nextflow-wf
   ```
 - Creation of input file
   ```
-  touch nextflow.config
+  touch example.config
   ```
 
 ## Usage of `germline-gpu.nf` workflow
 ```
-nextflow run germline-gpu.nf -c nextflow.config
+nextflow run germline-gpu.nf -c example.config
 ```
 
 ## Input file
-- nextflow.config
+- example.config
 ```groovy
 singularity {
     enabled = true
@@ -125,7 +125,7 @@ params {
   - slurm as executor
   - GPU Nodes
 - Memo
-  - The slurm partition name can be checked with **`sinfo -l`:** 
+  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
 
 ## Download reference and resource files
 Download reference and resource files from the URLs listed in [reference_hg38.download_links.txt](./download_links/reference_hg38.download_links.txt) by executing the following commnds:
@@ -143,9 +143,9 @@ $ OUTDIR=wgs_fastq ; mkdir -p $OUTDIR ; for url in `cat ../download_links/wgs_fa
 Run `germline-gpu.nf` workflow with a pair of FASTQ files. 
 - execution
   ```
-  nextflow run germline-gpu.nf -c nextflow.config
+  nextflow run germline-gpu.nf -c tutorial_01.config
   ```
-- nextflow.config
+- tutorial_01.config
   ```groovy
   singularity {
       enabled = true
@@ -213,9 +213,9 @@ Run `germline-gpu.nf` workflow with multiple pairs of FASTQ files.
 The number of `fastq_reads_1_*` params should be same as the number of `fastq_reads_2_*` and `rg_*` params.
 - execution
   ```
-  nextflow run germline-gpu.nf -c nextflow.config
+  nextflow run germline-gpu.nf -c tutorial_02.config
   ```
-- nextflow.config
+- tutorial_02.config
   ```groovy
   singularity {
       enabled = true
@@ -286,9 +286,9 @@ Run `germline-gpu.nf` workflow with knownSites params.
 
 - execution
   ```
-  nextflow run germline-gpu.nf -c nextflow.config
+  nextflow run germline-gpu.nf -c tutorial_03.config
   ```
-- nextflow.config
+- tutorial_03.config
   ```groovy
   singularity {
       enabled = true
