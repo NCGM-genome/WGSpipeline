@@ -64,16 +64,46 @@ process cnvkit_batch {
   """
 }
 
+// workflow {
+//   // params
+//   sample = Channel.fromPath(params.sample_list)
+//                       .splitText()
+//                       .map { it.trim() }
+//                       .map { it.replace(".cram", "") }
+//   cram = Channel.fromPath(params.sample_list)
+//                       .splitText()
+//                       .map { it.trim() }
+//                       .map { "${params.base_path}${it}" }  
+//   ref = Channel.value(params.ref)
+//   cnn = Channel.value(params.cnn)
+//   ncore = Channel.value(params.ncore)
+
+//   // cram2bam process
+//   cram2bam_out =cram2bam(ref, cram, sample)
+//   out_bam = cram2bam_out.bam
+//   // bam2bai process
+//   bam2bai_out = bam2bai(out_bam)
+//   out_bai = bam2bai_out.bai
+//   // batch process
+//   batch_out = cnvkit_batch(out_bam, out_bai, cnn ,ncore)
+// }
+
 workflow {
   // params
-  sample = Channel.fromPath(params.sample_list)
-                      .splitText()
-                      .map { it.trim() }
-                      .map { it.replace(".cram", "") }
-  cram = Channel.fromPath(params.sample_list)
-                      .splitText()
-                      .map { it.trim() }
-                      .map { "${params.base_path}${it}" }  
+  // フルパスが記載された sample_list.txt から Channel を作成
+  sample = Channel
+              .fromPath(params.sample_list)
+              .splitText()
+              .map { it.trim() }
+              .map { file ->
+                  // フルパスからファイル名のみを抽出し、.cram を除去
+                  def fileName = file.split('/').last().replace(".cram", "")
+                  return fileName
+              }
+  cram = Channel
+            .fromPath(params.sample_list)
+            .splitText()
+            .map { it.trim() }
   ref = Channel.value(params.ref)
   cnn = Channel.value(params.cnn)
   ncore = Channel.value(params.ncore)
