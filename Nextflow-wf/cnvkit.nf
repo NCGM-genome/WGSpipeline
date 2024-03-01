@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 process cram2bam {
-  publishDir params.outdir, mode:'copy'
+  publishDir "${params.outdir}/${sample}", mode:'copy'
   label 'samtools'
 
   input:
@@ -18,7 +18,7 @@ process cram2bam {
 }
 
 process bam2bai {
-  publishDir params.outdir, mode:'copy'
+  publishDir "${params.outdir}/${out_bam.baseName}", mode:'copy'
   label 'samtools'
 
   input:
@@ -34,13 +34,12 @@ process bam2bai {
 }
 
 process cnvkit_batch {
-  publishDir params.outdir, mode:'copy'
+  publishDir "${params.outdir}/${out_bam.baseName}", mode:'copy'
 
   input:
   path out_bam
   path out_bai
   path cnn
-  val sample
   val ncore
   
   output:
@@ -86,5 +85,5 @@ workflow {
   bam2bai_out = bam2bai(out_bam)
   out_bai = bam2bai_out.bai
   // batch process
-  batch_out = cnvkit_batch(out_bam, out_bai, cnn, sample ,ncore)
+  batch_out = cnvkit_batch(out_bam, out_bai, cnn ,ncore)
 }
