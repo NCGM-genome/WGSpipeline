@@ -13,7 +13,7 @@ process cram2bam {
 
   script:
   """
-  samtools view -b -T $ref $cram > ${sample}.bam
+  samtools view -@ ${params.samtools_thread} -b -T $ref $cram > ${sample}.bam
   """
 }
 
