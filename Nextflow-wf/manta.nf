@@ -33,29 +33,6 @@ process bam2bai {
   """
 }
 
-// process configManta {
-//   publishDir "${params.outdir}/${sample_name}", mode:'copy'
-
-//   input:
-//   path region
-//   path region_idx
-//   path ref
-//   path ref_idx
-//   tuple val(sample_name), path(bam_path), path(bai_path)
-  
-//   output:
-//   tuple val(sample_name), path("MantaWorkflow/*.py")
-
-//   script:
-//   """
-//   configManta.py \
-//     --bam $bam_path \
-//     --referenceFasta $ref \
-//     --callRegions $region
-  
-//   """
-// }
-
 process configManta {
   publishDir "${params.outdir}/${sample_name}", mode:'copy'
 
@@ -68,8 +45,17 @@ process configManta {
   tuple val(sample_name), path(bam_path), path(bai_path)
   
   output:
-  // tuple val(sample_name), path("MantaWorkflow/*.py")
-  path "MantaWorkflow/**"
+  // path "MantaWorkflow/results/**"
+  path "MantaWorkflow/results/stats/alignmentStatsSummary.txt"
+  path "MantaWorkflow/results/stats/svCandidateGenerationStats.tsv"
+  path "MantaWorkflow/results/stats/svCandidateGenerationStats.xml"
+  path "MantaWorkflow/results/stats/svLocusGraphStats.tsv"
+  path "MantaWorkflow/results/variants/candidateSV.vcf.gz"
+  path "MantaWorkflow/results/variants/candidateSV.vcf.gz.tbi"
+  path "MantaWorkflow/results/variants/candidateSmallIndels.vcf.gz"
+  path "MantaWorkflow/results/variants/candidateSmallIndels.vcf.gz.tbi"
+  path "MantaWorkflow/results/variants/diploidSV.vcf.gz"
+  path "MantaWorkflow/results/variants/diploidSV.vcf.gz.tbi"
 
   script:
   """
@@ -80,23 +66,6 @@ process configManta {
   MantaWorkflow/runWorkflow.py -j $ncore
   """
 }
-
-// process runWorkflow {
-//   publishDir "${params.outdir}/${sample_name}", mode:'copy'
-
-//   input:
-//   val ncore
-//   tuple val(sample_name), path(py_path)
-  
-//   output:
-//   // path "MantaWorkflow/results/variants*.vcf"
-//   path "MantaWorkflow/**"
-
-//   script:
-//   """
-//   MantaWorkflow/$py_path -j $ncore
-//   """
-// }
 
 workflow {
   // params -> Channel
@@ -114,26 +83,12 @@ workflow {
   region_idx = Channel.value(params.region_idx)
   ncore = Channel.value(params.ncore)
 
-
   // cram2bam process
   cram2bam_out =cram2bam(ref, ref_idx, cram)
-  cram2bam_out.view()
-  
   // bam2bai process
   bam2bai_out = bam2bai(cram2bam_out)
-  bam2bai_out.view()
   // tuple join
   paired = cram2bam_out.join(bam2bai_out, by: 0)
-  paired.view { "${it[0]}, ${it[1]}, ${it[2]}" }
-
   // configManta process
-  // configManta_out = configManta(out_bam, out_bai, region, region_idx ,ref ,ref_idx, ncore)
-  // configManta_out = configManta(region, region_idx ,ref ,ref_idx, paired)
   configManta_out = configManta(region, region_idx ,ref ,ref_idx, ncore, paired)
-  configManta_out.view()
-
-  // // runWorkflow process
-  // runWorkflow_out = runWorkflow(ncore, configManta_out)
-  // runWorkflow_out.view()
-  
 }
