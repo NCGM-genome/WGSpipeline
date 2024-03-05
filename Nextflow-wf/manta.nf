@@ -1,19 +1,20 @@
 #!/usr/bin/env nextflow
 process cram2bam {
-  publishDir "${params.outdir}/${sample}", mode:'copy'
+  publishDir "${params.outdir}/${cram.baseName}", mode:'copy'
   label 'samtools'
 
   input:
   path ref
-  val cram
-  val sample
+  path cram
   
   output:
-  path "${sample}.bam", emit: bam
+  // path "*.bam", emit: bam
+  tuple val(cram.baseName), path("*.bam"), emit: bam
 
   script:
+  def baseName = file(cram).getBaseName()
   """
-  samtools view -@ ${params.samtools_thread} -b -T $ref $cram > ${sample}.bam
+  samtools view -@ ${params.samtools_thread} -b -T $ref $cram > ${baseName}.bam
   """
 }
 
@@ -25,7 +26,7 @@ process bam2bai {
   path out_bam
   
   output:
-  path "${out_bam}.bai", emit: bai
+  path "*.bai", emit: bai
 
   script:
   """
@@ -79,38 +80,57 @@ process configManta {
 //   // ${params.outdir}/${sample}/MantaWorkflow/runWorkflow.py -j $ncore
 // }
 
+// workflow {
+//   // params -> Channel
+//   cram = Channel
+//     .fromPath(params.sample_list)
+//     .splitText()
+//     .map { it.trim() }
+//   ref = Channel.value(params.ref)
+//   ref_idx = Channel.value(params.ref_idx)
+//   region = Channel.value(params.region)
+//   region_idx = Channel.value(params.region_idx)
+//   ncore = Channel.value(params.ncore)
+
+//   // cram2bam process
+//   cram2bam_out =cram2bam(ref, cram)
+//   out_bam = cram2bam_out.bam
+//   out_bam.view()
+//   // bam2bai process
+//   bam2bai_out = bam2bai(out_bam)
+//   out_bai = bam2bai_out.bai
+//    out_bai.view()
+
+//   // // configManta process
+//   // configManta_out = configManta(out_bam, out_bai, region, region_idx ,ref ,ref_idx, ncore)
+//   // out_py = configManta_out.runWorkflow
+
+//   // // runWorkflow process
+//   // runWorkflow_out = runWorkflow(out_py, ncore)
+//   // runWorkflow_out = runWorkflow(sample, ncore)
+// }
+
 workflow {
-  // params -> Channel
-  sample = Channel
+  // Parameters -> Channel
+  Channel
     .fromPath(params.sample_list)
     .splitText()
     .map { it.trim() }
-    .map { file ->
-      def fileName = file.split('/').last().replace(".cram", "")
-      return fileName
+    .set { cram_files }
+
+  ref = file(params.ref)
+
+  // Process cram2bam and bam2bai in a single flow
+  cram_files
+    .map { cram -> tuple(ref, cram) }
+    .flatMap { ref, cram ->
+      cram2bam(ref, cram)
+        .flatMap { bam ->
+          bam2bai(bam)
+            .map { bai -> tuple(bam, bai) }
+        }
     }
-  cram = Channel
-    .fromPath(params.sample_list)
-    .splitText()
-    .map { it.trim() }
-  ref = Channel.value(params.ref)
-  ref_idx = Channel.value(params.ref_idx)
-  region = Channel.value(params.region)
-  region_idx = Channel.value(params.region_idx)
-  ncore = Channel.value(params.ncore)
-
-  // cram2bam process
-  cram2bam_out =cram2bam(ref, cram, sample)
-  out_bam = cram2bam_out.bam
-  // bam2bai process
-  bam2bai_out = bam2bai(out_bam)
-  out_bai = bam2bai_out.bai
-
-  // configManta process
-  configManta_out = configManta(out_bam, out_bai, region, region_idx ,ref ,ref_idx, ncore)
-  // out_py = configManta_out.runWorkflow
-
-  // // runWorkflow process
-  // runWorkflow_out = runWorkflow(out_py, ncore)
-  // runWorkflow_out = runWorkflow(sample, ncore)
+    .view { tuple ->
+      "BAM file: ${tuple[0]}, BAI file: ${tuple[1]}"
+    }
 }
