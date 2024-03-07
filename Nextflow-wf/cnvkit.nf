@@ -42,14 +42,14 @@ process cnvkit_batch {
   tuple val(sample_name), path(bam_path), path(bai_path)
   
   output:
-  path "*.pdf", emit: pdf
-  path "*.png", emit: png
-  path "*.antitargetcoverage.cnn", emit: anti
-  path "*.targetcoverage.cnn", emit: target
-  path "*.bintest.cns", emit: cns_bin
-  path "*.call.cns", emit: cns_call
-  path "*.cns", emit: cns
-  path "*.cnr", emit: cnr
+  path "*.pdf"
+  path "*.png"
+  path "*.antitargetcoverage.cnn"
+  path "*.targetcoverage.cnn"
+  path "*.bintest.cns"
+  path "*.call.cns"
+  path "*.cns"
+  path "*.cnr"
 
   script:
   """
@@ -87,31 +87,3 @@ workflow {
   // batch process
   batch_out = cnvkit_batch(cnn ,ncore, paired)
 }
-
-// workflow {
-//   // params -> Channel
-//   sample = Channel
-//     .fromPath(params.sample_list)
-//     .splitText()
-//     .map { it.trim() }
-//     .map { file ->
-//       def fileName = file.split('/').last().replace(".cram", "")
-//       return fileName
-//     }
-//   cram = Channel
-//     .fromPath(params.sample_list)
-//     .splitText()
-//     .map { it.trim() }
-//   ref = Channel.value(params.ref)
-//   cnn = Channel.value(params.cnn)
-//   ncore = Channel.value(params.ncore)
-
-//   // cram2bam process
-//   cram2bam_out =cram2bam(ref, cram, sample)
-//   out_bam = cram2bam_out.bam
-//   // bam2bai process
-//   bam2bai_out = bam2bai(out_bam)
-//   out_bai = bam2bai_out.bai
-//   // batch process
-//   batch_out = cnvkit_batch(out_bam, out_bai, cnn ,ncore)
-// }
