@@ -358,3 +358,231 @@ Run `germline-gpu.nf` workflow with knownSites params.
   |--NA12878.cram
   |--NA12878.cram.crai
   ```
+
+# cnvkit Nextflow
+
+This repository contains the following workflow:
+- **`cnvkit.nf`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
+
+## Preparation of `cnvkit.nf` workflow
+- Change Nextflow-wf directory
+  ```
+  cd WGSpipeline/Nextflow-wf
+  ```
+- Creation of input file
+  ```
+  touch example.config
+  ```
+
+## Usage of `cnvkit.nf` workflow
+```
+nextflow run cnvkit.nf -c example.config
+```
+
+## Input file
+- example.config
+```groovy
+singularity {
+    enabled = true
+}
+
+process {
+    withLabel: samtools {
+        container = 'docker://quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        clusterOptions = "--mem-per-cpu 8000M"
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        cpus = '<cpu core number>'
+    }
+}
+
+process {
+    withName: cnvkit_batch {
+        container = 'docker://quay.io/biocontainers/cnvkit:0.9.9--pyhdfd78af_0'
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        clusterOptions = "--mem-per-cpu 8000M"
+        cpus = '<cpu core number>'
+    }
+}
+
+params {
+    // Output directory.
+    outdir = 'path/to/dir'
+    // Path to cram list. List file containing paths to CRAM files on each line
+    sample_list = 'path/to/file'
+    // Path to reference file(.fasta)
+    ref = 'path/to/file'
+    // Path to reference file index(.fasta.fai)
+    ref_idx = 'path/to/file'
+    // Path to .reference.cnn
+    cnn =  'path/to/file'
+    // Number of samtools_thread. samtools_thread < cpus (withLabel: samtools)
+    samtools_thread = '<thread number>'
+    // Number of ncore. ncore < cpus  (withName: cnvkit_batch)
+    ncore = '<cnvkit batch cpu core number>'
+}
+```
+- This config file assumes the following execution conditions
+  - singularity as container runtime
+  - slurm as executor
+  - GPU Nodes
+- Memo
+  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
+
+# manta Nextflow
+
+This repository contains the following workflow:
+- **`manta.nf`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
+
+## Preparation of `manta.nf` workflow
+- Change Nextflow-wf directory
+  ```
+  cd WGSpipeline/Nextflow-wf
+  ```
+- Creation of input file
+  ```
+  touch example.config
+  ```
+
+## Usage of `manta.nf` workflow
+```
+nextflow run manta.nf -c example.config
+```
+
+## Input file
+- example.config
+```groovy
+singularity {
+    enabled = true
+}
+
+process {
+    withLabel: samtools {
+        container = 'docker://quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        clusterOptions = "--mem-per-cpu 8000M"
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        cpus = '<cpu core number>'
+    }
+}
+
+process {
+    withName: configManta {
+        container = 'docker://fredhutch/manta:1.6.0'
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        clusterOptions = "--mem-per-cpu 8000M"
+        cpus = '<cpu core number>'
+    }
+}
+
+params {
+    // Output directory.
+    outdir = 'path/to/dir'
+    // Path to cram list. List file containing paths to CRAM files on each line
+    sample_list = 'path/to/file'
+    // Path to reference file(.fasta)
+    ref = 'path/to/file'
+    // Path to reference file index(.fasta.fai)
+    ref_idx = 'path/to/file'
+    // Path to region　file(.bed.gz)
+    region = '/lustre8/home/yamaken-gaj-pg/Projects/manta/manta/region.bed.gz'
+    // Path to region　file index(.bed.gz.tbi)
+    region_idx = '/lustre8/home/yamaken-gaj-pg/Projects/manta/manta/region.bed.gz.tbi'
+    // Number of samtools_thread. samtools_thread < cpus (withLabel: samtools)
+    samtools_thread = '<thread number>'
+    // Number of ncore. ncore < cpus  (withName: configManta)
+    ncore = '<runWorkflow.py cpu core number>'
+}
+```
+- This config file assumes the following execution conditions
+  - singularity as container runtime
+  - slurm as executor
+  - GPU Nodes
+- Memo
+  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
+
+
+# ??? Nextflow
+
+This repository contains the following workflow:
+- **`???.nf`:** This workflow xxxxxxxxxx
+
+## Preparation of `???.nf` workflow
+- Change Nextflow-wf directory
+  ```
+  cd WGSpipeline/Nextflow-wf
+  ```
+- Creation of input file
+  ```
+  touch example.config
+  ```
+
+## Usage of `???.nf` workflow
+```
+nextflow run ???.nf -c example.config
+```
+
+## Input file
+- example.config
+```groovy
+singularity {
+    enabled = true
+}
+
+process {
+    withName: fq2cram {
+        containerOptions = '--nv --bind /path/to/cuda:/usr/local/cuda'
+        container = 'docker://hacchy/pbrun-fq2bam:4.0.0-1_v20230412'
+        queue = '<slurm partition name>'
+        executor = 'slurm'
+        memory = '<Maximum memory value> GB'
+    }
+}
+
+process { 
+    withLabel: haplotypecaller { 
+        containerOptions = '--nv --bind /path/to/cuda:/usr/local/cuda'
+        container = 'docker://nvcr.io/nvidia/clara/clara-parabricks:4.0.0-1'
+        queue = '<slurm partition name>'
+        executor = 'slurm'
+        memory = '<Maximum memory value> GB'
+    }
+}
+
+params {
+    // Output directory.
+    outdir = 'path/to/dir'
+    // Path to FASTQ file 1. FASTQ files defined by "fastq_reads_1_*". Please write the full path.
+    fastq_reads_1_* = 'path/to/file'
+    // Path to FASTQ file 2. FASTQ files defined by "fastq_reads_2_*". Please write the full path.
+    fastq_reads_2_* = 'path/to/file'
+    // Read group string. Read group defined by "rg_*"
+    rg_* = 'STRING'
+    // Path to the reference file.
+    ref = 'path/to/file'
+    // Pass supported bwa mem options as one string.
+    bwa_options = '-T 0 -Y'
+    // Output file prefix.
+    prefix = 'STRING'
+    // Number of GPUs to use for a run (should be ≥1).
+    num_gpus = INT
+    // Path to interval BED file for autosome regions.
+    autosome_interval = 'path/to/file'
+    // Path to interval BED file for PAR regions.
+    PAR_interval = 'path/to/file'
+    // Path to interval BED file for chrX regions.
+    chrX_interval = 'path/to/file'
+    // Path to interval BED file for chrY regions.
+    chrY_interval = 'path/to/file'
+    // Path to a known indels file. knownSites files defined by "knownSites_*".
+    knownSites_* = 'path/to/file'
+}
+```
+- This config file assumes the following execution conditions
+  - singularity as container runtime
+  - slurm as executor
+  - GPU Nodes
+- Memo
+  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
