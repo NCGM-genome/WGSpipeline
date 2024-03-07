@@ -45,7 +45,6 @@ process configManta {
   tuple val(sample_name), path(bam_path), path(bai_path)
   
   output:
-  // path "MantaWorkflow/results/**"
   path "MantaWorkflow/results/stats/alignmentStatsSummary.txt"
   path "MantaWorkflow/results/stats/svCandidateGenerationStats.tsv"
   path "MantaWorkflow/results/stats/svCandidateGenerationStats.xml"
