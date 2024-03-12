@@ -1,10 +1,11 @@
 #!/usr/bin/env nextflow
 process run_GVCFtyper {
-  publishDir '${params.outdir}', mode:'copy'
+  publishDir "${params.outdir}", mode:'copy'
 
   input:
   path GVCFLIST
   path REF
+  path REF_idx
   val SENTIEON_INSTALL_DIR
   val NCORE
   tuple val(idx), val(pad_idx), val(SHARD)
@@ -44,7 +45,8 @@ workflow {
   ref = Channel.value(params.ref)
   sentieon = Channel.value(params.sentieon)
   ncore = Channel.value(params.ncore)
+  ref_idx = Channel.value(params.ref_idx)
 
   // run_GVCFtyper
-  out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, sentieon, ncore, shard)
+  out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, ref_idx, sentieon, ncore, shard)
 }
