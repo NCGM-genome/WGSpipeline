@@ -1,22 +1,17 @@
 #!/usr/bin/env nextflow
 process run_GVCFtyper {
-  publishDir "${params.outdir}", mode:'copy'
+  publishDir '${params.outdir}', mode:'copy'
 
   input:
   path GVCFLIST
-  // path sh
   path REF
   val SENTIEON_INSTALL_DIR
   val NCORE
   tuple val(idx), val(pad_idx), val(SHARD)
 
   output:
-  tuple val(*.vcf.gz), val(pad_idx), path("*.vcf.gz")
+  tuple val(idx), val(pad_idx), path("*.vcf.gz")
 
-  // script:
-  // """
-  // $sh $GVCFLIST | perl -lnae "print $& if(/\d+/)"
-  // """
   script:
   """
   ${SENTIEON_INSTALL_DIR}/bin/sentieon driver -t $NCORE -r $REF $SHARD \
@@ -49,6 +44,7 @@ workflow {
   ref = Channel.value(params.ref)
   sentieon = Channel.value(params.sentieon)
   ncore = Channel.value(params.ncore)
+
   // run_GVCFtyper
   out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, sentieon, ncore, shard)
 }
