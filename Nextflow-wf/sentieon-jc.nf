@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 process run_GVCFtyper {
-  publishDir "${params.outdir}", mode:'copy'
+  publishDir "${params.outdir}/shard", mode:'copy'
 
   input:
   path GVCFLIST
@@ -11,7 +11,7 @@ process run_GVCFtyper {
   tuple val(idx), val(pad_idx), val(SHARD)
 
   output:
-  tuple val(idx), val(pad_idx), path("*.vcf.gz")
+  tuple val(idx), val(pad_idx), path("*.vcf.gz"), path("*.vcf.gz.tbi")
 
   script:
   """
@@ -40,7 +40,6 @@ workflow {
             tuple(idx + 1, paddedIndex, item)
         }
     }
-  shard.view()
 
   ref = Channel.value(params.ref)
   sentieon = Channel.value(params.sentieon)
