@@ -1,40 +1,36 @@
 #!/usr/bin/env nextflow
-// process run_GVCFtyper {
-//   publishDir "${params.outdir}", mode:'copy'
+process run_GVCFtyper {
+  publishDir "${params.outdir}", mode:'copy'
 
-//   input:
-//   path GVCFLIST
-//   path sh
+  input:
+  path GVCFLIST
+  // path sh
+  path REF
+  val SENTIEON_INSTALL_DIR
+  val NCORE
+  tuple val(idx), val(pad_idx), val(SHARD)
 
-//   output:
-//   path ????
+  output:
+  tuple val(*.vcf.gz), val(pad_idx), path("*.vcf.gz")
 
-//   script:
-//   """
-//   $sh $GVCFLIST | perl -lnae "print $& if(/\d+/)"
-//   """
-
-// }
-// process run_GVCFtyper_merge {
-//   publishDir "${params.outdir}", mode:'copy'
-// }
-// process clean_space.sh {
-//   publishDir "${params.outdir}", mode:'copy'
-// }
-// process run_varCal_SNP {
-//   publishDir "${params.outdir}", mode:'copy'
-// }
-// process run_varCal_INDEL {
-//   publishDir "${params.outdir}", mode:'copy'
-// }
-// process run_ApplyVarCal {
-//   publishDir "${params.outdir}", mode:'copy'
-// }
+  // script:
+  // """
+  // $sh $GVCFLIST | perl -lnae "print $& if(/\d+/)"
+  // """
+  script:
+  """
+  ${SENTIEON_INSTALL_DIR}/bin/sentieon driver -t $NCORE -r $REF $SHARD \
+    --traverse_param 2000/200 \
+    --algo GVCFtyper \
+    --genotype_mode multinomial \
+    shard${pad_idx}.vcf.gz - < $GVCFLIST
+  """
+}
 
 workflow {
   // params
   gvcfs_list = Channel.value(params.gvcfs_list)
-  sh_run_GVCFtyper = Channel.value(params.sh_run_GVCFtyper)
+  sh_GVCFtyper = Channel.value(params.run_GVCFtyper)
   // shard to tuple
   shard = Channel
     .fromPath(params.shard)
@@ -50,6 +46,9 @@ workflow {
     }
   shard.view()
 
+  ref = Channel.value(params.ref)
+  sentieon = Channel.value(params.sentieon)
+  ncore = Channel.value(params.ncore)
   // run_GVCFtyper
-  // out_run_GVCFtyper = run_GVCFtyper(gvcfs_list, sh_run_GVCFtyper)
+  out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, sentieon, ncore, shard)
 }
