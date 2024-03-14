@@ -6,7 +6,6 @@ process run_GVCFtyper {
   path GVCFLIST
   path REF
   path REF_idx
-  val NCORE
   tuple val(idx), val(pad_idx), val(SHARD)
 
   output:
@@ -14,7 +13,7 @@ process run_GVCFtyper {
 
   script:
   """
-  ${params.sentieon}/bin/sentieon driver -t $NCORE -r $REF $SHARD \
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore}  -r $REF $SHARD \
     --traverse_param 2000/200 \
     --algo GVCFtyper \
     --genotype_mode multinomial \
@@ -28,24 +27,54 @@ process run_GVCFtyper_merge {
   input:
   path REF
   path REF_idx
-  val NCORE
   tuple val(cn), val(vcfs)
   val tuple_collects
 
   output:
-  tuple val(cn), path("tmp.GVCFtyper.chr*.vcf.gz"), path("tmp.GVCFtyper.chr*.vcf.gz.tbi") 
+  tuple val(cn), path("tmp.GVCFtyper.chr${cn}.vcf.gz"), path("tmp.GVCFtyper.chr${cn}.vcf.gz.tbi") 
 
   script:
   """
-  ${params.sentieon}/bin/sentieon driver --passthru -t $NCORE -r $REF \
+  ${params.sentieon}/bin/sentieon driver --passthru -t ${params.ncore}  -r $REF \
     --algo GVCFtyper --merge \
     tmp.GVCFtyper.chr${cn}.vcf.gz $vcfs
   """
 }
 
+process merge_bcftools {
+  publishDir "${params.outdir}", mode:'copy'
+  label 'bamtols'
+
+  input:
+  tuple val(cn), path(tmp_vcf), path(tmp_vcf_tbi)
+
+  output:
+  tuple val(cn), path("${params.prefix}.chr${cn}.vcf.gz")
+
+  script:
+  """
+  bcftools view --threads ${params.ncore} -r chr${cn} -Oz -o ${params.prefix}.chr${cn}.vcf.gz tmp.GVCFtyper.chr${cn}.vcf.gz
+  """
+}
+
+process merge_sentieon_idx {
+  publishDir "${params.outdir}", mode:'copy'
+
+  input:
+  tuple val(cn), path(vcf)
+
+  output:
+  tuple val(cn), path("${params.prefix}.chr${cn}.vcf.gz.tbi")
+
+  script:
+  """
+  ${params.sentieon}/bin/sentieon util vcfindex ${vcf} && \
+  rm ${params.outdir}/tmp.GVCFtyper.chr${cn}.vcf.gz ${params.outdir}/tmp.GVCFtyper.chr${cn}.vcf.gz.tbi
+  """
+}
+
 workflow {
   //// GVCFtyper
-  // params
   gvcfs_list = Channel.value(params.gvcfs_list)
   sh_GVCFtyper = Channel.value(params.run_GVCFtyper)
   shard = Channel
@@ -61,14 +90,11 @@ workflow {
         }
     }
   ref = Channel.value(params.ref)
-  ncore = Channel.value(params.ncore)
   ref_idx = Channel.value(params.ref_idx)
   // run
-  out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, ref_idx, ncore, shard)
-
+  out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, ref_idx, shard)
 
   //// GVCFtyper_merge
-  // params
   shard_chr = Channel
     .fromPath(params.shard_chr)
     .splitText()
@@ -88,5 +114,10 @@ workflow {
         }
     }
   // run
-  out_GVCFtyper_merge = run_GVCFtyper_merge(ref, ref_idx, ncore, shard_chr, out_GVCFtyper.collect())
+  out_GVCFtyper_merge = run_GVCFtyper_merge(ref, ref_idx, shard_chr, out_GVCFtyper.collect())
+  // merge_bcftools
+  out_merge_bcftools = merge_bcftools(out_GVCFtyper_merge)
+
+  // merge_sentieon_idx
+  out_merge_sentieon_idx = merge_sentieon_idx(out_merge_bcftools)
 }
