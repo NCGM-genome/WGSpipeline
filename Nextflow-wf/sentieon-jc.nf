@@ -64,12 +64,32 @@ process merge_sentieon_idx {
   tuple val(cn), path(vcf)
 
   output:
-  tuple val(cn), path("${params.prefix}.chr${cn}.vcf.gz.tbi")
+  tuple val(cn), path(vcf), path("${params.prefix}.chr${cn}.vcf.gz.tbi")
 
   script:
   """
   ${params.sentieon}/bin/sentieon util vcfindex ${vcf} && \
   rm ${params.outdir}/tmp.GVCFtyper.chr${cn}.vcf.gz ${params.outdir}/tmp.GVCFtyper.chr${cn}.vcf.gz.tbi
+  """
+}
+
+process merge_siteonly {
+  publishDir "${params.outdir}", mode:'copy'
+  label 'bamtols'
+
+  input:
+  tuple val(cn), path(vcf), path(vcf_tbi)
+
+  output:
+  tuple val(cn), path("${params.prefix}.siteonly*vcf.gz")
+
+  script:
+  """
+  if [ $cn -eq 1 ]; then
+      bcftools view --threads ${params.ncore} -Oz -G ${params.prefix}.chr${cn}.vcf.gz > ${params.prefix}.siteonly.vcf.gz
+  else
+      bcftools view --threads ${params.ncore} -Oz -GH ${params.prefix}.chr${cn}.vcf.gz > ${params.prefix}.siteonly.chr${cn}.vcf.gz
+  fi
   """
 }
 
@@ -117,7 +137,8 @@ workflow {
   out_GVCFtyper_merge = run_GVCFtyper_merge(ref, ref_idx, shard_chr, out_GVCFtyper.collect())
   // merge_bcftools
   out_merge_bcftools = merge_bcftools(out_GVCFtyper_merge)
-
   // merge_sentieon_idx
   out_merge_sentieon_idx = merge_sentieon_idx(out_merge_bcftools)
+  // merge_siteonly
+  out_merge_siteonly= merge_siteonly(out_merge_sentieon_idx)
 }
