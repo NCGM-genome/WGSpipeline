@@ -93,8 +93,32 @@ process merge_siteonly {
   """
 }
 
+process clean_space {
+  publishDir "${params.outdir}", mode:'copy'
+  label 'tabix'
+
+  input:
+  path siteonly_vcfs
+
+  output:
+  path "${params.prefix}.siteonly.vcf.gz", emit: vcf
+  path "${params.prefix}.siteonly.vcf.gz.tbi", emit: idx
+
+  script:
+  """
+  for cn in {2..22}
+  do
+      cat ${params.prefix}.siteonly.chr\${cn}.vcf.gz >> ${params.prefix}.siteonly.vcf.gz
+      rm ${params.prefix}.siteonly.chr\${cn}.vcf.gz
+  done
+  rm -Rf ${params.outdir}/shard
+  tabix ${PREFIX}.siteonly.vcf.gz
+  """
+  //     rm ${params.prefix}.siteonly.chr\${cn}.vcf.gz
+}
+
 workflow {
-  //// GVCFtyper
+  // GVCFtyper
   gvcfs_list = Channel.value(params.gvcfs_list)
   sh_GVCFtyper = Channel.value(params.run_GVCFtyper)
   shard = Channel
@@ -111,10 +135,10 @@ workflow {
     }
   ref = Channel.value(params.ref)
   ref_idx = Channel.value(params.ref_idx)
-  // run
+  //// run
   out_GVCFtyper = run_GVCFtyper(gvcfs_list, ref, ref_idx, shard)
 
-  //// GVCFtyper_merge
+  // GVCFtyper_merge
   shard_chr = Channel
     .fromPath(params.shard_chr)
     .splitText()
@@ -133,12 +157,18 @@ workflow {
             tuple(index, item)
         }
     }
-  // run
+  //// run
   out_GVCFtyper_merge = run_GVCFtyper_merge(ref, ref_idx, shard_chr, out_GVCFtyper.collect())
-  // merge_bcftools
+  //// merge_bcftools
   out_merge_bcftools = merge_bcftools(out_GVCFtyper_merge)
-  // merge_sentieon_idx
+  //// merge_sentieon_idx
   out_merge_sentieon_idx = merge_sentieon_idx(out_merge_bcftools)
-  // merge_siteonly
-  out_merge_siteonly= merge_siteonly(out_merge_sentieon_idx)
+  //// merge_siteonly
+  out_merge_siteonly = merge_siteonly(out_merge_sentieon_idx)
+
+  //// clean_space
+  siteonly_vcfs = out_merge_siteonly.map { it[1] }.collect()
+  // siteonly_vcfs.view()
+  out_clean_space = clean_space(siteonly_vcfs)
+
 }
