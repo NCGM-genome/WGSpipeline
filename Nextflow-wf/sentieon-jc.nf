@@ -110,11 +110,57 @@ process clean_space {
   do
       cat ${params.prefix}.siteonly.chr\${cn}.vcf.gz >> ${params.prefix}.siteonly.vcf.gz
       rm ${params.prefix}.siteonly.chr\${cn}.vcf.gz
+      rm ${params.outdir}/${params.prefix}.siteonly.chr\${cn}.vcf.gz
   done
   rm -Rf ${params.outdir}/shard
-  tabix ${PREFIX}.siteonly.vcf.gz
+  tabix ${params.prefix}.siteonly.vcf.gz
   """
-  //     rm ${params.prefix}.siteonly.chr\${cn}.vcf.gz
+}
+
+process varCal_SNP {
+  publishDir "${params.outdir}", mode:'copy'
+
+  input:
+  path REF
+  path ref_idx
+  path SITEONLY
+  path SITEONLY_idx
+  path DBSNP
+  path DBSNP_idx
+  path HAPMAP
+  path HAPMAP_idx
+  path OMNI
+  path OMNI_idx
+  path i1000G
+  path i1000G_idx
+  
+  output:
+  path "*.tranches", emit: tranches
+  path "*.R", emit: R
+  path "*.recal", emit: recal
+  path "*.recal.idx", emit: recal_idx
+
+  script:
+  """
+  mode="SNP"
+  ANN="--annotation QD --annotation MQRankSum --annotation ReadPosRankSum --annotation FS --annotation SOR --annotation DP"
+  MAXGAUSSIAN=6
+  RESOURCE="
+    --resource $HAPMAP --resource_param hapmap,known=false,training=true,truth=true,prior=15 \
+    --resource $OMNI --resource_param omni,known=false,training=true,truth=true,prior=12 \
+    --resource $i1000G --resource_param 1000G,known=false,training=true,truth=false,prior=10 \
+    --resource $DBSNP --resource_param dbsnp,known=true,training=false,truth=false,prior=7"
+  TRANCHE="--tranche 100.0 --tranche 99.95 --tranche 99.9 --tranche 99.8 --tranche 99.6 --tranche 99.5 --tranche 99.4 --tranche 99.3 --tranche 99.0 --tranche 98.0 --tranche 97.0 --tranche 90.0"
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+    --algo VarCal \
+    -v $SITEONLY \
+    --max_gaussians \${MAXGAUSSIAN} \
+    --var_type \${mode} \
+    \${TRANCHE} \${ANN} \${RESOURCE} \
+    --tranches_file \${mode}.tranches \
+    --plot_file VarCal.\${mode}.R \
+    VarCal.\${mode}.recal
+  """
 }
 
 workflow {
@@ -166,9 +212,36 @@ workflow {
   //// merge_siteonly
   out_merge_siteonly = merge_siteonly(out_merge_sentieon_idx)
 
-  //// clean_space
+  // clean_space
   siteonly_vcfs = out_merge_siteonly.map { it[1] }.collect()
-  // siteonly_vcfs.view()
   out_clean_space = clean_space(siteonly_vcfs)
+  siteonly_vcf = out_clean_space.vcf
+  siteonly_idx = out_clean_space.idx
 
+  // varCal-SNP
+  dbsnp_path =Channel.fromPath("${params.bundle}/${params.dbsnp}")
+  dbsnp_path_idx =Channel.fromPath("${params.bundle}/${params.dbsnp}.tbi")
+
+  hapmap_path =Channel.fromPath("${params.bundle}/${params.hapmap}")
+  hapmap_path_idx =Channel.fromPath("${params.bundle}/${params.hapmap}.tbi")
+
+  omni_path =Channel.fromPath("${params.bundle}/${params.omni}")
+  omni_path_idx =Channel.fromPath("${params.bundle}/${params.omni}.tbi")
+
+  i1000g_path =Channel.fromPath("${params.bundle}/${params.i1000g}")
+  i1000g_path_idx =Channel.fromPath("${params.bundle}/${params.i1000g}.tbi")
+
+  //// run
+  out_varCal_SNP = varCal_SNP(ref, 
+                              ref_idx, 
+                              siteonly_vcf, 
+                              siteonly_idx, 
+                              dbsnp_path, 
+                              dbsnp_path_idx, 
+                              hapmap_path, 
+                              hapmap_path_idx, 
+                              omni_path, 
+                              omni_path_idx, 
+                              i1000g_path,
+                              i1000g_path_idx)
 }
