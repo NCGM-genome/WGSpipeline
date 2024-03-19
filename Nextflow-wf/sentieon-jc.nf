@@ -163,6 +163,49 @@ process varCal_SNP {
   """
 }
 
+process varCal_INDEL {
+  publishDir "${params.outdir}", mode:'copy'
+
+  input:
+  path REF
+  path ref_idx
+  path SITEONLY
+  path SITEONLY_idx
+  path DBSNP
+  path DBSNP_idx
+  path MILLS
+  path MILLS_idx
+  path AXIOM
+  path AXIOM_idx
+  
+  output:
+  path "*.tranches", emit: tranches
+  path "*.R", emit: R
+  path "*.recal", emit: recal
+  path "*.recal.idx", emit: recal_idx
+
+  script:
+  """
+  mode="INDEL"
+  ANN="--annotation FS --annotation ReadPosRankSum --annotation MQRankSum --annotation QD --annotation SOR --annotation DP"
+  MAXGAUSSIAN=4
+  RESOURCE="
+    --resource $MILLS --resource_param mills,known=false,training=true,truth=true,prior=12 \
+    --resource $AXIOM --resource_param axiomPoly,known=false,training=true,truth=false,prior=10 \
+    --resource $DBSNP --resource_param dbsnp,known=true,training=false,truth=false,prior=2"
+  TRANCHE="--tranche 100.0 --tranche 99.95 --tranche 99.9 --tranche 99.5 --tranche 99.0 --tranche 97.0 --tranche 96.0 --tranche 95.0 --tranche 94.0 --tranche 93.5 --tranche 93.0 --tranche 92.0 --tranche 91.0 --tranche 90.0"
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+    --algo VarCal \
+    -v $SITEONLY \
+    --max_gaussians \${MAXGAUSSIAN} \
+    --var_type \${mode} \
+    \${TRANCHE} \${ANN} \${RESOURCE} \
+    --tranches_file \${mode}.tranches \
+    --plot_file VarCal.\${mode}.R \
+    VarCal.\${mode}.recal
+  """
+}
+
 workflow {
   // GVCFtyper
   gvcfs_list = Channel.value(params.gvcfs_list)
@@ -230,7 +273,6 @@ workflow {
 
   i1000g_path =Channel.fromPath("${params.bundle}/${params.i1000g}")
   i1000g_path_idx =Channel.fromPath("${params.bundle}/${params.i1000g}.tbi")
-
   //// run
   out_varCal_SNP = varCal_SNP(ref, 
                               ref_idx, 
@@ -244,4 +286,21 @@ workflow {
                               omni_path_idx, 
                               i1000g_path,
                               i1000g_path_idx)
+  // varCal-INDEL
+  mills_path = Channel.fromPath("${params.bundle}/${params.mills}")
+  mills_path_idx = Channel.fromPath("${params.bundle}/${params.mills}.tbi")
+
+  axiom_path = Channel.fromPath("${params.bundle}/${params.axiom}")
+  axiom_path_idx = Channel.fromPath("${params.bundle}/${params.axiom}.tbi")
+  //// run
+  out_varCal_INDEL = varCal_INDEL(ref, 
+                                  ref_idx, 
+                                  siteonly_vcf, 
+                                  siteonly_idx, 
+                                  dbsnp_path, 
+                                  dbsnp_path_idx, 
+                                  mills_path, 
+                                  mills_path_idx, 
+                                  axiom_path, 
+                                  axiom_path_idx)
 }
