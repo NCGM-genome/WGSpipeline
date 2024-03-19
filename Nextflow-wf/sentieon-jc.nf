@@ -242,6 +242,10 @@ process run_ApplyVarCal {
     --tranches_file ${SNP_tranches} \
     --recal ${SNP_recal} \
     ${params.prefix}.VQSR.chr${cn}.vcf.gz
+  if [ -e ${params.prefix}.VQSR.chr${cn}.vcf.gz ]
+  then
+      rm ${params.outdir}/${params.prefix}.chr${cn}.vcf.gz ${params.outdir}/${params.prefix}.chr${cn}.vcf.gz.tbi
+  fi
   """
 }
 
