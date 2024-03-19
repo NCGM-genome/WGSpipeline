@@ -206,6 +206,45 @@ process varCal_INDEL {
   """
 }
 
+process run_ApplyVarCal {
+  publishDir "${params.outdir}", mode:'copy'
+
+  input:
+  path REF
+  path REF_idx
+  tuple val(cn), path(vcf), path(vcf_tbi)
+  path INDEL_tranches
+  path INDEL_recal
+  path INDEL_recal_idx
+  path SNP_tranches
+  path SNP_recal
+  path SNP_recal_idx
+
+  output:
+  path "${params.prefix}.VQSR.chr${cn}.vcf.gz"
+
+  script:
+  """
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+    --algo ApplyVarCal \
+    --var_type INDEL \
+    -v ${vcf} \
+    --sensitivity 99.7 \
+    --tranches_file ${INDEL_tranches} \
+    --recal ${INDEL_recal} \
+    INDELrecal.chr${cn}.vcf.gz
+
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+    --algo ApplyVarCal \
+    --var_type SNP \
+    -v INDELrecal.chr${cn}.vcf.gz \
+    --sensitivity 99.7 \
+    --tranches_file ${SNP_tranches} \
+    --recal ${SNP_recal} \
+    ${params.prefix}.VQSR.chr${cn}.vcf.gz
+  """
+}
+
 workflow {
   // GVCFtyper
   gvcfs_list = Channel.value(params.gvcfs_list)
@@ -286,6 +325,7 @@ workflow {
                               omni_path_idx, 
                               i1000g_path,
                               i1000g_path_idx)
+
   // varCal-INDEL
   mills_path = Channel.fromPath("${params.bundle}/${params.mills}")
   mills_path_idx = Channel.fromPath("${params.bundle}/${params.mills}.tbi")
@@ -303,4 +343,23 @@ workflow {
                                   mills_path_idx, 
                                   axiom_path, 
                                   axiom_path_idx)
+  
+  // ApplyVarCal
+  indel_tranches = out_varCal_INDEL.tranches
+  indel_recal = out_varCal_INDEL.recal
+  indel_recal_idx = out_varCal_INDEL.recal_idx
+  snp_tranches = out_varCal_SNP.tranches
+  snp_recal = out_varCal_SNP.recal
+  snp_recal_idx = out_varCal_SNP.recal_idx
+
+  out_run_ApplyVarCal = run_ApplyVarCal(ref, 
+                                        ref_idx, 
+                                        out_merge_sentieon_idx, 
+                                        indel_tranches.first(),
+                                        indel_recal.first(),
+                                        indel_recal_idx.first(), 
+                                        snp_tranches.first(), 
+                                        snp_recal.first(), 
+                                        snp_recal_idx.first()
+                                        )
 }
