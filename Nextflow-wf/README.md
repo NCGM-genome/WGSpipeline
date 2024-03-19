@@ -1,8 +1,10 @@
-# WGSpipeline Nextflow
-
-This repository contains the following workflow:
+# Workflows
+This repository contains following workflows:
 - **`germline-gpu.nf`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl)
+- **`cnvkit.nf`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
+- **`manta.nf`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
 
+# WGSpipeline Nextflow (**`germline-gpu.nf`**)
 ## Installation requirements
 - [Hardware requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#hardware-requirements)
 - [Software requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#software-requirements)
@@ -359,11 +361,13 @@ Run `germline-gpu.nf` workflow with knownSites params.
   |--NA12878.cram.crai
   ```
 
-# cnvkit Nextflow
-
-This repository contains the following workflow:
-- **`cnvkit.nf`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
-
+# cnvkit Nextflow (**`cnvkit.nf`**)
+## Installation requirements
+- SingularityCE 4.0.0+
+- openjdk 11.0.20.1+
+- Nextflow 23.10.1+
+## [Install `Nextflow`](#install-nextflow)
+- See previous section.
 ## Preparation of `cnvkit.nf` workflow
 - Change Nextflow-wf directory
   ```
@@ -426,15 +430,17 @@ params {
 - This config file assumes the following execution conditions
   - singularity as container runtime
   - slurm as executor
-  - GPU Nodes
+  - CPU Nodes
 - Memo
   - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
 
-# manta Nextflow
-
-This repository contains the following workflow:
-- **`manta.nf`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
-
+# manta Nextflow (**`manta.nf`**)
+## Installation requirements
+- SingularityCE 4.0.0+
+- openjdk 11.0.20.1+
+- Nextflow 23.10.1+
+## [Install `Nextflow`](#install-nextflow)
+- See previous section.
 ## Preparation of `manta.nf` workflow
 - Change Nextflow-wf directory
   ```
@@ -499,90 +505,6 @@ params {
 - This config file assumes the following execution conditions
   - singularity as container runtime
   - slurm as executor
-  - GPU Nodes
-- Memo
-  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
-
-
-# ??? Nextflow
-
-This repository contains the following workflow:
-- **`???.nf`:** This workflow xxxxxxxxxx
-
-## Preparation of `???.nf` workflow
-- Change Nextflow-wf directory
-  ```
-  cd WGSpipeline/Nextflow-wf
-  ```
-- Creation of input file
-  ```
-  touch example.config
-  ```
-
-## Usage of `???.nf` workflow
-```
-nextflow run ???.nf -c example.config
-```
-
-## Input file
-- example.config
-```groovy
-singularity {
-    enabled = true
-}
-
-process {
-    withName: fq2cram {
-        containerOptions = '--nv --bind /path/to/cuda:/usr/local/cuda'
-        container = 'docker://hacchy/pbrun-fq2bam:4.0.0-1_v20230412'
-        queue = '<slurm partition name>'
-        executor = 'slurm'
-        memory = '<Maximum memory value> GB'
-    }
-}
-
-process { 
-    withLabel: haplotypecaller { 
-        containerOptions = '--nv --bind /path/to/cuda:/usr/local/cuda'
-        container = 'docker://nvcr.io/nvidia/clara/clara-parabricks:4.0.0-1'
-        queue = '<slurm partition name>'
-        executor = 'slurm'
-        memory = '<Maximum memory value> GB'
-    }
-}
-
-params {
-    // Output directory.
-    outdir = 'path/to/dir'
-    // Path to FASTQ file 1. FASTQ files defined by "fastq_reads_1_*". Please write the full path.
-    fastq_reads_1_* = 'path/to/file'
-    // Path to FASTQ file 2. FASTQ files defined by "fastq_reads_2_*". Please write the full path.
-    fastq_reads_2_* = 'path/to/file'
-    // Read group string. Read group defined by "rg_*"
-    rg_* = 'STRING'
-    // Path to the reference file.
-    ref = 'path/to/file'
-    // Pass supported bwa mem options as one string.
-    bwa_options = '-T 0 -Y'
-    // Output file prefix.
-    prefix = 'STRING'
-    // Number of GPUs to use for a run (should be ≥1).
-    num_gpus = INT
-    // Path to interval BED file for autosome regions.
-    autosome_interval = 'path/to/file'
-    // Path to interval BED file for PAR regions.
-    PAR_interval = 'path/to/file'
-    // Path to interval BED file for chrX regions.
-    chrX_interval = 'path/to/file'
-    // Path to interval BED file for chrY regions.
-    chrY_interval = 'path/to/file'
-    // Path to a known indels file. knownSites files defined by "knownSites_*".
-    knownSites_* = 'path/to/file'
-}
-```
-- This config file assumes the following execution conditions
-  - singularity as container runtime
-  - slurm as executor
-  - GPU Nodes
+  - CPU Nodes
 - Memo
   - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
