@@ -1,10 +1,10 @@
 # Workflows
 This repository contains following workflows:
-- **`germline-gpu.nf`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl)
-- **`cnvkit.nf`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
-- **`manta.nf`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
+- [WGSpipeline Nextflow](#wgspipeline-nextflow)**`(germline-gpu.nf)`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl).
+- [CNVkit Nextflow](#cnvkit-nextflow)**`(cnvkit.nf)`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
+- [Manta Nextflow](#manta-nextflow)**`(manta.nf)`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
 
-# WGSpipeline Nextflow (**`germline-gpu.nf`**)
+# WGSpipeline Nextflow
 ## Installation requirements
 - [Hardware requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#hardware-requirements)
 - [Software requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#software-requirements)
@@ -361,7 +361,7 @@ Run `germline-gpu.nf` workflow with knownSites params.
   |--NA12878.cram.crai
   ```
 
-# cnvkit Nextflow (**`cnvkit.nf`**)
+# CNVkit Nextflow
 ## Installation requirements
 - SingularityCE 4.0.0+
 - openjdk 11.0.20.1+
@@ -434,7 +434,7 @@ params {
 - Memo
   - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
 
-# manta Nextflow (**`manta.nf`**)
+# Manta Nextflow
 ## Installation requirements
 - SingularityCE 4.0.0+
 - openjdk 11.0.20.1+
