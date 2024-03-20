@@ -1,8 +1,10 @@
+# Workflows
+This repository contains following workflows:
+- [WGSpipeline Nextflow](#wgspipeline-nextflow)**`(germline-gpu.nf)`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl).
+- [CNVkit Nextflow](#cnvkit-nextflow)**`(cnvkit.nf)`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
+- [Manta Nextflow](#manta-nextflow)**`(manta.nf)`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
+
 # WGSpipeline Nextflow
-
-This repository contains the following workflow:
-- **`germline-gpu.nf`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl)
-
 ## Installation requirements
 - [Hardware requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#hardware-requirements)
 - [Software requirements to run parabricks](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html#software-requirements)
@@ -358,3 +360,151 @@ Run `germline-gpu.nf` workflow with knownSites params.
   |--NA12878.cram
   |--NA12878.cram.crai
   ```
+
+# CNVkit Nextflow
+## Installation requirements
+- SingularityCE 4.0.0+
+- openjdk 11.0.20.1+
+- Nextflow 23.10.1+
+## [Install `Nextflow`](#install-nextflow)
+- See previous section.
+## Preparation of `cnvkit.nf` workflow
+- Change Nextflow-wf directory
+  ```
+  cd WGSpipeline/Nextflow-wf
+  ```
+- Creation of input file
+  ```
+  touch example.config
+  ```
+
+## Usage of `cnvkit.nf` workflow
+```
+nextflow run cnvkit.nf -c example.config
+```
+
+## Input file
+- example.config
+```groovy
+singularity {
+    enabled = true
+}
+
+process {
+    withLabel: samtools {
+        container = 'docker://quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        clusterOptions = "--mem-per-cpu 8000M"
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        cpus = '<cpu core number>'
+    }
+}
+
+process {
+    withName: cnvkit_batch {
+        container = 'docker://quay.io/biocontainers/cnvkit:0.9.9--pyhdfd78af_0'
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        clusterOptions = "--mem-per-cpu 8000M"
+        cpus = '<cpu core number>'
+    }
+}
+
+params {
+    // Output directory.
+    outdir = 'path/to/dir'
+    // Path to cram list. List file containing paths to CRAM files on each line
+    sample_list = 'path/to/file'
+    // Path to reference file(.fasta)
+    ref = 'path/to/file'
+    // Path to reference file index(.fasta.fai)
+    ref_idx = 'path/to/file'
+    // Path to .reference.cnn
+    cnn =  'path/to/file'
+    // Number of samtools_thread. samtools_thread < cpus (withLabel: samtools)
+    samtools_thread = '<thread number>'
+    // Number of ncore. ncore < cpus  (withName: cnvkit_batch)
+    ncore = '<cnvkit batch cpu core number>'
+}
+```
+- This config file assumes the following execution conditions
+  - singularity as container runtime
+  - slurm as executor
+  - CPU Nodes
+- Memo
+  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
+
+# Manta Nextflow
+## Installation requirements
+- SingularityCE 4.0.0+
+- openjdk 11.0.20.1+
+- Nextflow 23.10.1+
+## [Install `Nextflow`](#install-nextflow)
+- See previous section.
+## Preparation of `manta.nf` workflow
+- Change Nextflow-wf directory
+  ```
+  cd WGSpipeline/Nextflow-wf
+  ```
+- Creation of input file
+  ```
+  touch example.config
+  ```
+
+## Usage of `manta.nf` workflow
+```
+nextflow run manta.nf -c example.config
+```
+
+## Input file
+- example.config
+```groovy
+singularity {
+    enabled = true
+}
+
+process {
+    withLabel: samtools {
+        container = 'docker://quay.io/biocontainers/samtools:1.19.2--h50ea8bc_0'
+        clusterOptions = "--mem-per-cpu 8000M"
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        cpus = '<cpu core number>'
+    }
+}
+
+process {
+    withName: configManta {
+        container = 'docker://fredhutch/manta:1.6.0'
+        executor = 'slurm'
+        queue = '<slurm partition name>'
+        clusterOptions = "--mem-per-cpu 8000M"
+        cpus = '<cpu core number>'
+    }
+}
+
+params {
+    // Output directory.
+    outdir = 'path/to/dir'
+    // Path to cram list. List file containing paths to CRAM files on each line
+    sample_list = 'path/to/file'
+    // Path to reference file(.fasta)
+    ref = 'path/to/file'
+    // Path to reference file index(.fasta.fai)
+    ref_idx = 'path/to/file'
+    // Path to region　file(.bed.gz)
+    region = '/lustre8/home/yamaken-gaj-pg/Projects/manta/manta/region.bed.gz'
+    // Path to region　file index(.bed.gz.tbi)
+    region_idx = '/lustre8/home/yamaken-gaj-pg/Projects/manta/manta/region.bed.gz.tbi'
+    // Number of samtools_thread. samtools_thread < cpus (withLabel: samtools)
+    samtools_thread = '<thread number>'
+    // Number of ncore. ncore < cpus  (withName: configManta)
+    ncore = '<runWorkflow.py cpu core number>'
+}
+```
+- This config file assumes the following execution conditions
+  - singularity as container runtime
+  - slurm as executor
+  - CPU Nodes
+- Memo
+  - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
