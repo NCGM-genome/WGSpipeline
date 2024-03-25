@@ -3,6 +3,7 @@ This repository contains following workflows:
 - [WGSpipeline Nextflow](#wgspipeline-nextflow)**`(germline-gpu.nf)`:** This workflow calculates alignments (cram) and calls variants (gvcf) from sequence reads (fastq) and reference (fasta) using `parabricks` version 4.0.0. Variants will be output as separate files according to the interval and ploidy.  This workflow is the Nextflow version of [germline-gpu.cwl](../Workflows/germline-gpu.cwl).
 - [CNVkit Nextflow](#cnvkit-nextflow)**`(cnvkit.nf)`:** This workflow executes the cnvkit batch command of CNVkit, a Python library and command-line software toolkit for inferring and visualizing copy number variations (CNVs) from DNA sequencing data, using Nextflow.
 - [Manta Nextflow](#manta-nextflow)**`(manta.nf)`:** This workflow uses manta:1.6.0 to generate a configuration file (configManta.py) and execute the workflow (runWorkflow.py), enabling the fast and accurate detection of structural variations (SVs) and indels, using Nextflow.
+- [Sentieon joint calling Nextflow](#sentieon-joint-calling-nextflow)**`(sentieon-jc.nf)`:** This workflow executes the sentioen command with the gvcf file as input, using Nextflow.
 
 # WGSpipeline Nextflow
 ## Installation requirements
@@ -11,8 +12,6 @@ This repository contains following workflows:
 - SingularityCE 4.0.0+
 - openjdk 11.0.20.1+
 - Nextflow 23.10.1+
-
-
 ## Install `Nextflow`
 You can install Nextflow by executing the following commands:
 - Check prerequisites：Java 11 or later is required
@@ -43,14 +42,12 @@ Please confirm the nextflow version:
   Encoding: UTF-8 (UTF-8)
 ```
 Install guide：[Getting started](https://www.nextflow.io/)
-
 ## Clone this repository
 Clone this repository by executing the following commands:
 ```
 $ cd /path/to/working/directory/
 $ git clone https://github.com/NCGM-genome/WGSpipeline.git
 ```
-
 ## Preparation of `germline-gpu.nf` workflow
 - Change Nextflow-wf directory
   ```
@@ -60,12 +57,10 @@ $ git clone https://github.com/NCGM-genome/WGSpipeline.git
   ```
   touch example.config
   ```
-
 ## Usage of `germline-gpu.nf` workflow
 ```
 nextflow run germline-gpu.nf -c example.config
 ```
-
 ## Input file
 - example.config
 ```groovy
@@ -128,19 +123,16 @@ params {
   - GPU Nodes
 - Memo
   - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
-
 ## Download reference and resource files
 Download reference and resource files from the URLs listed in [reference_hg38.download_links.txt](./download_links/reference_hg38.download_links.txt) by executing the following commnds:
 ```
 $ OUTDIR=reference_hg38 ; mkdir -p $OUTDIR ; for url in `cat ../download_links/reference_hg38.download_links.txt` ; do echo $url ; file=`basename $url` ; if [ ! -f ${OUTDIR}/$file ] ; then wget $url -O ${OUTDIR}/$file ; fi ; done
 ```
-
 ## Download a dataset for tutorial
 Download a dataset for tutorial from the URLs listed in [wgs_fastq_NA12878_20k.download_links.txt](./download_links/wgs_fastq_NA12878_20k.download_links.txt) by executing the following commnds:
 ```
 $ OUTDIR=wgs_fastq ; mkdir -p $OUTDIR ; for url in `cat ../download_links/wgs_fastq_NA12878_20k.download_links.txt` ; do echo $url ; file=`basename $url` ; if [ ! -f ${OUTDIR}/$file ] ; then wget $url -O ${OUTDIR}/$file ; fi ; done
 ```
-
 ## Tutorial 1: Run  `germline-gpu.nf` workflow with a pair of FASTQ files.
 Run `germline-gpu.nf` workflow with a pair of FASTQ files. 
 - execution
@@ -207,7 +199,6 @@ Output files will be saved in the directory `/path/to/working/directory/WGSpipel
 |--NA12878.H06HDADXX130110.1.cram
 |--NA12878.H06HDADXX130110.1.cram.crai
 ```
-
 ## Tutorial 2: Run `germline-gpu.nf` workflow with multiple pairs of FASTQ files.
 Run `germline-gpu.nf` workflow with multiple pairs of FASTQ files.
 
@@ -282,7 +273,6 @@ Output files will be saved in the directory `/path/to/working/directory/WGSpipel
 |--NA12878.cram
 |--NA12878.cram.crai
 ```
-
 ## Tutorial 3: Run `germline-gpu.nf` workflow with --knownSites option
 Run `germline-gpu.nf` workflow with knownSites params.
 
@@ -368,6 +358,8 @@ Run `germline-gpu.nf` workflow with knownSites params.
 - Nextflow 23.10.1+
 ## [Install `Nextflow`](#install-nextflow)
 - See previous section.
+## [Clone this repository](#clone-this-repository)
+- See previous section.
 ## Preparation of `cnvkit.nf` workflow
 - Change Nextflow-wf directory
   ```
@@ -377,12 +369,10 @@ Run `germline-gpu.nf` workflow with knownSites params.
   ```
   touch example.config
   ```
-
 ## Usage of `cnvkit.nf` workflow
 ```
 nextflow run cnvkit.nf -c example.config
 ```
-
 ## Input file
 - example.config
 ```groovy
@@ -441,6 +431,8 @@ params {
 - Nextflow 23.10.1+
 ## [Install `Nextflow`](#install-nextflow)
 - See previous section.
+## [Clone this repository](#clone-this-repository)
+- See previous section.
 ## Preparation of `manta.nf` workflow
 - Change Nextflow-wf directory
   ```
@@ -450,12 +442,10 @@ params {
   ```
   touch example.config
   ```
-
 ## Usage of `manta.nf` workflow
 ```
 nextflow run manta.nf -c example.config
 ```
-
 ## Input file
 - example.config
 ```groovy
@@ -508,3 +498,110 @@ params {
   - CPU Nodes
 - Memo
   - The **`slurm partition name`:**  can be checked with **`sinfo -l`:** 
+
+# Sentieon joint calling Nextflow
+## Installation requirements
+- openjdk 11.0.20.1+
+- Nextflow 23.10.1+
+- jemalloc 5.3.0-147-ge4817c8d89a2a413e835c4adeab5c5c4412f9235
+- sentieon sentieon-genomics-202308
+## Install `jemalloc`
+- Install jemalloc to use with Sentieon
+  ```
+  $ git clone https://github.com/jemalloc/jemalloc.git
+  $ cd jemalloc
+  $ ./autogen.sh
+  $ ./configure --prefix=$HOME/workdir/jemalloc_install
+  $ make
+  $ make install
+  $ export PATH=$HOME/workdir/jemalloc_install/bin:$PATH
+  ```
+## Install `sentieon`
+- Get `sentieon-genomics-202308.tar.gz`, unzip, add sentieon to your path
+  ```
+  $ tar zxvf sentieon-genomics-202308.tar.gz
+  $ export PATH=path/to/workdir/sentieon-genomics-202308/bin:$PATH
+  ```
+- Set up Sentieon license server
+  ```
+  $ export SENTIEON_LICENSE = <your license server>
+  ```
+## [Install `Nextflow`](#install-nextflow)
+- See previous section.
+## [Clone this repository](#clone-this-repository)
+- See previous section.
+## Preparation of `sentieon-jc.nf` workflow
+- Change Nextflow-wf directory
+  ```
+  cd WGSpipeline/Nextflow-wf
+  ```
+- Creation of input file
+  ```
+  touch example.config
+  ```
+## Usage of `sentieon-jc.nf` workflow
+```
+nextflow run sentieon-jc.nf -c example.config
+```
+## Input file
+- example.config
+```groovy
+singularity {
+    enabled = true
+}
+
+// delete work directory files
+cleanup = true
+
+params {
+    // Output directory.
+    outdir = 'path/to/dir'
+    // Prefix name
+    prefix = 'PREFIX'
+    // Path to gvcf list (gvcfs.txt). List file containing paths to gvcf files on each line
+    gvcfs_list = 'path/to/file'
+    // Shard options List (shard.txt). List file containing options on each line
+    shard = 'path/to/file'
+    // Path to reference file(.fasta)
+    ref = 'path/to/file'
+    // Path to reference file index(.fasta.fai)
+    ref_idx = 'path/to/file'
+    // Number of ncore.
+    ncore = 64
+    // Directory of Sentieon commands
+    sentieon = 'path/to/dir'
+    // Parallel processing information for each chromosome (shard_chr.txt)
+    shard_chr = 'path/to/file'
+    // Directory of input VCF and its index files（dbsnp, hapmap, omni, i1000g, mills, axiom）
+    bundle = 'path/to/dir'
+    // VCF dbsnp
+    dbsnp = 'dbsnp_151.hg38.vcf.gz'
+    // VCF hapmap
+    hapmap = 'hapmap_3.3.hg38.vcf.gz'
+    // VCF omni
+    omni = '1000G_omni2.5.hg38.vcf.gz'
+    // VCF i1000g
+    i1000g = '1000G_phase1.snps.high_confidence.hg38.vcf.gz'
+    // VCF mills
+    mills = 'Mills_and_1000G_gold_standard.indels.hg38.vcf.gz'
+    // VCF axiom
+    axiom = 'Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz'
+}
+
+process {
+    withLabel: bamtols {
+        container = '/path/to/bcftools:1.16--hfe4b78e_1'
+        containerOptions = '--bind /path/to/home:/path/to/home'
+    }
+}
+
+process {
+    withLabel: tabix {
+        container = '/path/to/bcftools:1.10.2--hd2cd319_0'
+        containerOptions = '--bind /path/to/home:/path/to/home'
+    }
+}
+```
+- This config file assumes the following execution conditions
+  - singularity as container runtime
+  - CPU Nodes
