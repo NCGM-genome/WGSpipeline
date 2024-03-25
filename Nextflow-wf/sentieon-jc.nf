@@ -252,7 +252,6 @@ process run_ApplyVarCal {
 workflow {
   // GVCFtyper
   gvcfs_list = Channel.value(params.gvcfs_list)
-  sh_GVCFtyper = Channel.value(params.run_GVCFtyper)
   shard = Channel
     .fromPath(params.shard)
     .splitText()
