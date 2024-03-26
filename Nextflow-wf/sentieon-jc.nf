@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
 process run_GVCFtyper {
   publishDir "${params.outdir}/shard", mode:'copy'
+  label 'sentieon'
 
   input:
   path GVCFLIST
@@ -13,7 +14,7 @@ process run_GVCFtyper {
 
   script:
   """
-  ${params.sentieon}/bin/sentieon driver -t ${params.ncore}  -r $REF $SHARD \
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore_sentieon}  -r $REF $SHARD \
     --traverse_param 2000/200 \
     --algo GVCFtyper \
     --genotype_mode multinomial \
@@ -23,6 +24,7 @@ process run_GVCFtyper {
 
 process run_GVCFtyper_merge {
   publishDir "${params.outdir}", mode:'copy'
+  label 'merge'
 
   input:
   path REF
@@ -35,7 +37,7 @@ process run_GVCFtyper_merge {
 
   script:
   """
-  ${params.sentieon}/bin/sentieon driver --passthru -t ${params.ncore}  -r $REF \
+  ${params.sentieon}/bin/sentieon driver --passthru -t ${params.ncore_merge}  -r $REF \
     --algo GVCFtyper --merge \
     tmp.GVCFtyper.chr${cn}.vcf.gz $vcfs
   """
@@ -53,12 +55,13 @@ process merge_bcftools {
 
   script:
   """
-  bcftools view --threads ${params.ncore} -r chr${cn} -Oz -o ${params.prefix}.chr${cn}.vcf.gz tmp.GVCFtyper.chr${cn}.vcf.gz
+  bcftools view --threads ${params.ncore_merge} -r chr${cn} -Oz -o ${params.prefix}.chr${cn}.vcf.gz tmp.GVCFtyper.chr${cn}.vcf.gz
   """
 }
 
 process merge_sentieon_idx {
   publishDir "${params.outdir}", mode:'copy'
+  label 'merge'
 
   input:
   tuple val(cn), path(vcf)
@@ -86,9 +89,9 @@ process merge_siteonly {
   script:
   """
   if [ $cn -eq 1 ]; then
-      bcftools view --threads ${params.ncore} -Oz -G ${params.prefix}.chr${cn}.vcf.gz > ${params.prefix}.siteonly.vcf.gz
+      bcftools view --threads ${params.ncore_merge} -Oz -G ${params.prefix}.chr${cn}.vcf.gz > ${params.prefix}.siteonly.vcf.gz
   else
-      bcftools view --threads ${params.ncore} -Oz -GH ${params.prefix}.chr${cn}.vcf.gz > ${params.prefix}.siteonly.chr${cn}.vcf.gz
+      bcftools view --threads ${params.ncore_merge} -Oz -GH ${params.prefix}.chr${cn}.vcf.gz > ${params.prefix}.siteonly.chr${cn}.vcf.gz
   fi
   """
 }
@@ -119,6 +122,7 @@ process clean_space {
 
 process varCal_SNP {
   publishDir "${params.outdir}", mode:'copy'
+  label 'sentieon'
 
   input:
   path REF
@@ -151,7 +155,7 @@ process varCal_SNP {
     --resource $i1000G --resource_param 1000G,known=false,training=true,truth=false,prior=10 \
     --resource $DBSNP --resource_param dbsnp,known=true,training=false,truth=false,prior=7"
   TRANCHE="--tranche 100.0 --tranche 99.95 --tranche 99.9 --tranche 99.8 --tranche 99.6 --tranche 99.5 --tranche 99.4 --tranche 99.3 --tranche 99.0 --tranche 98.0 --tranche 97.0 --tranche 90.0"
-  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore_sentieon} -r $REF \
     --algo VarCal \
     -v $SITEONLY \
     --max_gaussians \${MAXGAUSSIAN} \
@@ -165,6 +169,7 @@ process varCal_SNP {
 
 process varCal_INDEL {
   publishDir "${params.outdir}", mode:'copy'
+  label 'sentieon'
 
   input:
   path REF
@@ -194,7 +199,7 @@ process varCal_INDEL {
     --resource $AXIOM --resource_param axiomPoly,known=false,training=true,truth=false,prior=10 \
     --resource $DBSNP --resource_param dbsnp,known=true,training=false,truth=false,prior=2"
   TRANCHE="--tranche 100.0 --tranche 99.95 --tranche 99.9 --tranche 99.5 --tranche 99.0 --tranche 97.0 --tranche 96.0 --tranche 95.0 --tranche 94.0 --tranche 93.5 --tranche 93.0 --tranche 92.0 --tranche 91.0 --tranche 90.0"
-  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore_sentieon} -r $REF \
     --algo VarCal \
     -v $SITEONLY \
     --max_gaussians \${MAXGAUSSIAN} \
@@ -208,6 +213,7 @@ process varCal_INDEL {
 
 process run_ApplyVarCal {
   publishDir "${params.outdir}", mode:'copy'
+  label 'vqsr'
 
   input:
   path REF
@@ -225,7 +231,7 @@ process run_ApplyVarCal {
 
   script:
   """
-  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore_vqsr} -r $REF \
     --algo ApplyVarCal \
     --var_type INDEL \
     -v ${vcf} \
@@ -234,7 +240,7 @@ process run_ApplyVarCal {
     --recal ${INDEL_recal} \
     INDELrecal.chr${cn}.vcf.gz
 
-  ${params.sentieon}/bin/sentieon driver -t ${params.ncore} -r $REF \
+  ${params.sentieon}/bin/sentieon driver -t ${params.ncore_vqsr} -r $REF \
     --algo ApplyVarCal \
     --var_type SNP \
     -v INDELrecal.chr${cn}.vcf.gz \
